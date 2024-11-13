@@ -92,26 +92,6 @@ Only replication of experimental units constitute true replication.
 Observational units, finally, are entities at which measurements are made.
 
 
-To explore the impact of experimental design on the ability to answer questions of interest, we are going to use an interactive application, provided in the [ConfoundingExplorer](https://csoneson.github.io/ConfoundingExplorer/) package. 
-
-:::::::::::::::::::::::::::::::::::::::  challenge
-
-## Challenge
-
-Launch the ConfoundingExplorer application and familiarize yourself with the interface.
-
-::::::::::::::::::::::::::::::::::::::::::::::::::
-
-
-:::::::::::::::::::::::::::::::::::::::  challenge
-
-## Challenge
-
-1. For a balanced design (equal distribution of replicates between the two groups in each batch), what is the effect of increasing the strength of the batch effect? Does it matter whether one adjusts for the batch effect or not?
-2. For an increasingly unbalanced design (most or all replicates of one group coming from one batch), what is the effect of increasing the strength of the batch effect? Does it matter whether one adjusts for the batch effect or not?
-
-::::::::::::::::::::::::::::::::::::::::::::::::::
-
 
 # RNA-seq quantification: from reads to count matrix
 

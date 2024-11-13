@@ -5,6 +5,10 @@ teaching: 65
 exercises: 35
 ---
 
+:::::::::::::::::::::::::::::::::::::::::: callout
+
+This workshop has been adapted from the original [RNA-seq analysis with Bioconductor](https://carpentries-incubator.github.io/bioc-rnaseq/) and customised for delivery on NeSI as part of the Otago Bioinformatics Spring School
+::::::::::::::::::::::::::::::::::::::::::::::::::
 
 ::::::::::::::::::::::::::::::::::::::: objectives
 

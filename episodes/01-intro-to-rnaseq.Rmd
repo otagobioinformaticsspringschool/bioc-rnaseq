@@ -152,18 +152,13 @@ If you are mapping your reads to the transcriptome, you will instead need a file
 * [Ensembl](https://www.ensembl.org/info/data/ftp/index.html) provides reference files for a large set of organisms, including [plants](https://plants.ensembl.org/info/data/ftp/index.html) and [fungi](https://fungi.ensembl.org/info/data/ftp/index.html).
 * [UCSC](https://hgdownload.soe.ucsc.edu/downloads.html) also provides reference files for many organisms.
 
-:::::::::::::::::::::::::::::::::::::::  challenge
 
-## Challenge
-
-Download the latest mouse transcriptome fasta file from GENCODE. What do the entries look like? Tip: to read the file into R, consider the `readDNAStringSet()` function from the `Biostrings` package.
-  
-::::::::::::::::::::::::::::::::::::::::::::::::::
 
 # Where are we heading towards in this workshop? 
 
-During the coming two days, we will discuss and practice how to perform differential expression analysis with Bioconductor, and how to interpret the results. 
-We will start from a count matrix, and thus assume that the initial quality assessment and quantification of gene expression have already been done. 
+During this workshop we will discuss and practice how to perform differential expression analysis with Bioconductor, and how to interpret the results. 
+We will start from a count matrix, and thus assume that the initial quality assessment and quantification of gene expression have already been done. If you would like to see one example of a quality assessment workflow, you can find one [here](https://tylermcinnes.github.io/RNA-seq-data-analysis-workflow/episode_2.html). 
+
 The outcome of a differential expression analysis is often represented using graphical representations, such as MA plots and heatmaps (see below for examples). 
 
 <img src="fig/maPlot-example.png" alt="An example MA plot"/>

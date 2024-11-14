@@ -50,12 +50,15 @@ se <- readRDS("data/GSE96870_se.rds")
 ```
 
 
-## Remove unexpressed genes
+## Exploratory data analysis
 
 Exploratory analysis is crucial for quality control and to get to know our data.
 It can help us detect quality problems, sample swaps and contamination, as well as give us a sense of the most salient patterns present in the data.
 In this episode, we will learn about two common ways of performing exploratory analysis for RNA-seq data; namely clustering and principal component analysis (PCA).
 These tools are in no way limited to (or developed for) analysis of RNA-seq data.
+
+
+## Remove unexpressed genes
 However, there are certain characteristics of count assays that need to be taken into account when they are applied to this type of data. First of all, not all mouse genes in the genome will be expressed in our Cerebellum samples. There are many different threshold you could use to say whether a gene's expression was detectable or not; here we are going to use a very minimal one that if a gene does not have more than 5 counts total across all samples, there is simply not enough data to be able to do anything with it anyway. 
 
 ```{r filter-lowexpr}

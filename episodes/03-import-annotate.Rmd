@@ -46,6 +46,7 @@ If you get any error messages about `there is no package called 'XXXX'` it means
 
 ## Load data
 
+
 In the last episode, we used R to download 4 files from the internet and saved them on our computer. But we do not have these files loaded into R yet so that we can work with them. The original experimental design in [Blackmore et al. 2017](https://pubmed.ncbi.nlm.nih.gov/28696309/) was fairly complex: 8 week old male and female C57BL/6 mice were collected at Day 0 (before influenza infection), Day 4 and Day 8 after influenza infection. From each mouse, cerebellum and spinal cord tissues were taken for RNA-seq. There were originally 4 mice per 'Sex x Time x Tissue' group, but a few were lost along the way resulting in a total of 45 samples. For this workshop, we are going to simplify the analysis by only using the 22 cerebellum samples. Expression quantification was done using STAR to align to the mouse genome and then counting reads that map to genes. In addition to the counts per gene per sample, we also need information on which sample belongs to which Sex/Time point/Replicate. And for the genes, it is helpful to have extra information called annotation.
 Let's read in the data files that we downloaded in the last episode and start to explore them:
 
@@ -59,7 +60,8 @@ dim(counts)
 # View(counts)
 ```
 
-Genes are in rows and samples are in columns, so we have counts for 41,786 genes and 22 samples. The `View()` command has been commented out for the website, but running it will open a tab in RStudio that lets us look at the data and even sort the table by a particular column. However, the viewer cannot change the data inside the `counts` object, so we can only look, not permanently sort nor edit the entries. When finished, close the viewer using the X in the tab. Looks like the rownames are gene symbols and the column names are the GEO sample IDs, which are not very informative for telling us which sample is what.
+Genes are in rows and samples are in columns, so we have counts for 41,786 genes and 22 samples. The `View()` command has been commented out for the website, but running it will open a tab in RStudio that lets us look at the data and even sort the table by a particular column. However, the viewer cannot change the data inside the `counts` object, so we can only look, not permanently sort nor edit the entries. When finished, close the viewer using the X in the tab. 
+It looks like the rownames are gene symbols and the column names are the GEO sample IDs, which are not very informative for telling us which sample is what.
 
 ### Sample annotations
 
@@ -74,8 +76,16 @@ dim(coldata)
 
 Now samples are in rows with the GEO sample IDs as the rownames, and we have 10 columns of information. The columns that are the most useful for this workshop are `geo_accession` (GEO sample IDs again), `sex` and `time`.
 
+It is often the case that we will have multiple objects with important information, and we will need to cross reference and compare the objects to get the full picture.
+
 ### Gene annotations
-The counts only have gene symbols, which while short and somewhat recognizable to the human brain, are not always good absolute identifiers for exactly what gene was measured. For this we need additional gene annotations that were provided by the authors. The `count` and `coldata` files were in comma separated value (.csv) format, but we cannot use that for our gene annotation file because the descriptions can contain commas that would prevent a .csv file from being read in correctly. Instead the gene annotation file is in tab separated value (.tsv) format. Likewise, the descriptions can contain the single quote `'` (e.g., 5'), which by default R assumes indicates a character entry. So we have to use a more generic function `read.delim()` with extra arguments to specify that we have tab-separated data (`sep = "\t"`) with no quotes used (`quote = ""`). We also put in other arguments to specify that the first row contains our column names (`header = TRUE`), the gene symbols that should be our `row.names` are in the 5th column (`row.names = 5`), and that NCBI's species-specific gene ID (i.e., ENTREZID) should be read in as character data even though they look like numbers (`colClasses` argument). You can look up this details on available arguments by simply entering the function name starting with question mark. (e.g., `?read.delim`)
+The counts only have gene symbols, which while short and somewhat recognizable to the human brain, are not always good absolute identifiers for exactly what gene was measured. For this we need additional gene annotations that were provided by the authors. 
+We will import this data using a new function, read.delim(). Why are we using a new function, and not read.csv() like we did above? Some files have contents, like commas or quotation marks, that mean we need to use specialised functions. This is explained in the next paragraph - skip this if you are brand new to R and don't yet need the detail. 
+
+The `count` and `coldata` files were in comma separated value (.csv) format, but we cannot use that for our gene annotation file because the descriptions can contain commas that would prevent a .csv file from being read in correctly. Instead the gene annotation file is in tab separated value (.tsv) format. 
+Likewise, the descriptions can contain the single quote `'` (e.g., 5'), which by default R assumes indicates a character entry. So we have to use a more generic function `read.delim()` with extra arguments to specify that we have tab-separated data (`sep = "\t"`) with no quotes used (`quote = ""`). 
+We also put in other arguments to specify that the first row contains our column names (`header = TRUE`), the gene symbols that should be our `row.names` are in the 5th column (`row.names = 5`), and that NCBI's species-specific gene ID (i.e., ENTREZID) should be read in as character data even though they look like numbers (`colClasses` argument). 
+You can look up this details on available arguments by simply entering the function name starting with question mark. (e.g., `?read.delim`)
 
 ```{r read-gene-annots, purl=TRUE}
 rowranges <- read.delim("data/GSE96870_rowranges.tsv", 
@@ -116,7 +126,8 @@ table(rowranges$gbkey)
 
 :::::::::::::::::::::::::::::::::::
 
-You can see how keeping related information in separate objects could easily lead to mis-matches between our counts, gene annotations and sample annotations. This is why Bioconductor has created a specialized S4 class called a `SummarizedExperiment`. The details of a `SummarizedExperiment` were covered extensively at the end of the [Introduction to data analysis with R and Bioconductor](https://carpentries-incubator.github.io/bioc-intro/60-next-steps.html#next-steps) workshop. 
+You can see how keeping related information in separate objects could easily lead to mis-matches between our counts, gene annotations and sample annotations. 
+This is why Bioconductor has created a specialized S4 class called a `SummarizedExperiment`. The details of a `SummarizedExperiment` object are covered extensively at the end of the [Introduction to data analysis with R and Bioconductor](https://carpentries-incubator.github.io/bioc-intro/60-next-steps.html#next-steps) workshop. 
 As a reminder, let's take a look at the figure below representing the anatomy of the `SummarizedExperiment` class:
 
 ```{r SE, echo=FALSE, out.width="80%"}
@@ -240,13 +251,18 @@ dim(rowData(se))
 se$Label <- paste(se$sex, se$time, se$mouse, sep = "_")
 se$Label
 colnames(se) <- se$Label
+# Now when we look at the se object, we have informative sample IDs:
+head(assay(se))
 
-# Our samples are not in order based on sex and time
+
+# Now we will group our samples based on sex and time. 
+# First, create a variable called group:
 se$Group <- paste(se$sex, se$time, sep = "_")
 se$Group
 
-# change this to factor data with the levels in order 
-# that we want, then rearrange the se object:
+# Now we want to re-order all samples so they are grouped. To do this, we must 
+# a) tell R to treat the data as a factor (a special type of data) 
+# b) manually specify the order of the groups:
 
 se$Group <- factor(se$Group, levels = c("Female_Day0","Male_Day0", 
                                         "Female_Day4","Male_Day4",

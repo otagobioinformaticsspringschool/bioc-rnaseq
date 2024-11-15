@@ -40,6 +40,7 @@ If you get any error messages about `there is no package called 'XXXX'` it means
 
 ## Load data
 
+
 In the last episode, we used R to download 4 files from the internet and saved them on our computer. But we do not have these files loaded into R yet so that we can work with them. The original experimental design in [Blackmore et al. 2017](https://pubmed.ncbi.nlm.nih.gov/28696309/) was fairly complex: 8 week old male and female C57BL/6 mice were collected at Day 0 (before influenza infection), Day 4 and Day 8 after influenza infection. From each mouse, cerebellum and spinal cord tissues were taken for RNA-seq. There were originally 4 mice per 'Sex x Time x Tissue' group, but a few were lost along the way resulting in a total of 45 samples. For this workshop, we are going to simplify the analysis by only using the 22 cerebellum samples. Expression quantification was done using STAR to align to the mouse genome and then counting reads that map to genes. In addition to the counts per gene per sample, we also need information on which sample belongs to which Sex/Time point/Replicate. And for the genes, it is helpful to have extra information called annotation.
 Let's read in the data files that we downloaded in the last episode and start to explore them:
 
@@ -61,7 +62,8 @@ dim(counts)
 # View(counts)
 ```
 
-Genes are in rows and samples are in columns, so we have counts for 41,786 genes and 22 samples. The `View()` command has been commented out for the website, but running it will open a tab in RStudio that lets us look at the data and even sort the table by a particular column. However, the viewer cannot change the data inside the `counts` object, so we can only look, not permanently sort nor edit the entries. When finished, close the viewer using the X in the tab. Looks like the rownames are gene symbols and the column names are the GEO sample IDs, which are not very informative for telling us which sample is what.
+Genes are in rows and samples are in columns, so we have counts for 41,786 genes and 22 samples. The `View()` command has been commented out for the website, but running it will open a tab in RStudio that lets us look at the data and even sort the table by a particular column. However, the viewer cannot change the data inside the `counts` object, so we can only look, not permanently sort nor edit the entries. When finished, close the viewer using the X in the tab. 
+It looks like the rownames are gene symbols and the column names are the GEO sample IDs, which are not very informative for telling us which sample is what.
 
 ### Sample annotations
 
@@ -84,8 +86,16 @@ dim(coldata)
 
 Now samples are in rows with the GEO sample IDs as the rownames, and we have 10 columns of information. The columns that are the most useful for this workshop are `geo_accession` (GEO sample IDs again), `sex` and `time`.
 
+It is often the case that we will have multiple objects with important information, and we will need to cross reference and compare the objects to get the full picture.
+
 ### Gene annotations
-The counts only have gene symbols, which while short and somewhat recognizable to the human brain, are not always good absolute identifiers for exactly what gene was measured. For this we need additional gene annotations that were provided by the authors. The `count` and `coldata` files were in comma separated value (.csv) format, but we cannot use that for our gene annotation file because the descriptions can contain commas that would prevent a .csv file from being read in correctly. Instead the gene annotation file is in tab separated value (.tsv) format. Likewise, the descriptions can contain the single quote `'` (e.g., 5'), which by default R assumes indicates a character entry. So we have to use a more generic function `read.delim()` with extra arguments to specify that we have tab-separated data (`sep = "\t"`) with no quotes used (`quote = ""`). We also put in other arguments to specify that the first row contains our column names (`header = TRUE`), the gene symbols that should be our `row.names` are in the 5th column (`row.names = 5`), and that NCBI's species-specific gene ID (i.e., ENTREZID) should be read in as character data even though they look like numbers (`colClasses` argument). You can look up this details on available arguments by simply entering the function name starting with question mark. (e.g., `?read.delim`)
+The counts only have gene symbols, which while short and somewhat recognizable to the human brain, are not always good absolute identifiers for exactly what gene was measured. For this we need additional gene annotations that were provided by the authors. 
+We will import this data using a new function, read.delim(). Why are we using a new function, and not read.csv() like we did above? Some files have contents, like commas or quotation marks, that mean we need to use specialised functions. This is explained in the next paragraph - skip this if you are brand new to R and don't yet need the detail. 
+
+The `count` and `coldata` files were in comma separated value (.csv) format, but we cannot use that for our gene annotation file because the descriptions can contain commas that would prevent a .csv file from being read in correctly. Instead the gene annotation file is in tab separated value (.tsv) format. 
+Likewise, the descriptions can contain the single quote `'` (e.g., 5'), which by default R assumes indicates a character entry. So we have to use a more generic function `read.delim()` with extra arguments to specify that we have tab-separated data (`sep = "\t"`) with no quotes used (`quote = ""`). 
+We also put in other arguments to specify that the first row contains our column names (`header = TRUE`), the gene symbols that should be our `row.names` are in the 5th column (`row.names = 5`), and that NCBI's species-specific gene ID (i.e., ENTREZID) should be read in as character data even though they look like numbers (`colClasses` argument). 
+You can look up this details on available arguments by simply entering the function name starting with question mark. (e.g., `?read.delim`)
 
 
 ``` r
@@ -145,7 +155,8 @@ table(rowranges$gbkey)
 
 :::::::::::::::::::::::::::::::::::
 
-You can see how keeping related information in separate objects could easily lead to mis-matches between our counts, gene annotations and sample annotations. This is why Bioconductor has created a specialized S4 class called a `SummarizedExperiment`. The details of a `SummarizedExperiment` were covered extensively at the end of the [Introduction to data analysis with R and Bioconductor](https://carpentries-incubator.github.io/bioc-intro/60-next-steps.html#next-steps) workshop. 
+You can see how keeping related information in separate objects could easily lead to mis-matches between our counts, gene annotations and sample annotations. 
+This is why Bioconductor has created a specialized S4 class called a `SummarizedExperiment`. The details of a `SummarizedExperiment` object are covered extensively at the end of the [Introduction to data analysis with R and Bioconductor](https://carpentries-incubator.github.io/bioc-intro/60-next-steps.html#next-steps) workshop. 
 As a reminder, let's take a look at the figure below representing the anatomy of the `SummarizedExperiment` class:
 
 <img src="https://uclouvain-cbio.github.io/WSBIM1322/figs/SE.svg" width="80%" style="display: block; margin: auto;" />
@@ -445,8 +456,51 @@ se$Label
 
 ``` r
 colnames(se) <- se$Label
+# Now when we look at the se object, we have informative sample IDs:
+head(assay(se))
+```
 
-# Our samples are not in order based on sex and time
+``` output
+             Female_Day8_14 Female_Day0_9 Female_Day0_10 Female_Day4_15
+Xkr4                   1891          2410           2159           1980
+LOC105243853              0             0              1              4
+LOC105242387            204           121            110            120
+LOC105242467             12             5              5              5
+Rp1                       2             2              0              3
+Sox17                   251           239            218            220
+             Male_Day4_18 Male_Day8_6 Female_Day8_5 Male_Day0_11 Female_Day4_22
+Xkr4                 1977        1945          1757         2235           1779
+LOC105243853            0           0             1            3              3
+LOC105242387          172         173           177          130            131
+LOC105242467            2           6             3            2              2
+Rp1                     2           1             3            1              1
+Sox17                 261         232           179          296            233
+             Male_Day4_13 Male_Day8_23 Male_Day8_24 Female_Day0_8 Male_Day0_7
+Xkr4                 1528         1644         1585          2275        1881
+LOC105243853            0            1            3             1           0
+LOC105242387          160          180          176           161         154
+LOC105242467            2            1            2             2           4
+Rp1                     2            2            2             3           6
+Sox17                 271          205          230           302         286
+             Male_Day4_1 Female_Day8_16 Female_Day4_21 Female_Day0_4
+Xkr4                2584           1837           1890          1910
+LOC105243853           0              1              1             0
+LOC105242387         124            221            272           214
+LOC105242467           7              1              3             1
+Rp1                    5              3              5             1
+Sox17                325            201            267           322
+             Male_Day0_2 Female_Day4_20 Male_Day4_12 Female_Day8_19
+Xkr4                1771           2315         1645           1723
+LOC105243853           0              1            0              1
+LOC105242387         124            189          223            251
+LOC105242467           4              2            1              4
+Rp1                    3              3            1              0
+Sox17                273            197          310            246
+```
+
+``` r
+# Now we will group our samples based on sex and time. 
+# First, create a variable called group:
 se$Group <- paste(se$sex, se$time, sep = "_")
 se$Group
 ```
@@ -460,8 +514,9 @@ se$Group
 ```
 
 ``` r
-# change this to factor data with the levels in order 
-# that we want, then rearrange the se object:
+# Now we want to re-order all samples so they are grouped. To do this, we must 
+# a) tell R to treat the data as a factor (a special type of data) 
+# b) manually specify the order of the groups:
 
 se$Group <- factor(se$Group, levels = c("Female_Day0","Male_Day0", 
                                         "Female_Day4","Male_Day4",
@@ -752,7 +807,7 @@ sessionInfo()
 ```
 
 ``` output
-R version 4.4.1 (2024-06-14)
+R version 4.4.2 (2024-10-31)
 Platform: x86_64-pc-linux-gnu
 Running under: Ubuntu 22.04.5 LTS
 
@@ -784,7 +839,7 @@ other attached packages:
 
 loaded via a namespace (and not attached):
  [1] Matrix_1.7-1            bit_4.5.0               jsonlite_1.8.9         
- [4] highr_0.11              compiler_4.4.1          BiocManager_1.30.25    
+ [4] highr_0.11              compiler_4.4.2          BiocManager_1.30.25    
  [7] renv_1.0.11             crayon_1.5.3            blob_1.2.4             
 [10] Biostrings_2.72.1       png_0.1-8               fastmap_1.2.0          
 [13] yaml_2.3.10             lattice_0.22-6          R6_2.5.1               
@@ -793,9 +848,9 @@ loaded via a namespace (and not attached):
 [22] KEGGREST_1.44.1         cachem_1.1.0            xfun_0.49              
 [25] bit64_4.5.2             memoise_2.0.1           SparseArray_1.4.8      
 [28] RSQLite_2.3.7           cli_3.6.3               zlibbioc_1.50.0        
-[31] grid_4.4.1              vctrs_0.6.5             evaluate_1.0.1         
+[31] grid_4.4.2              vctrs_0.6.5             evaluate_1.0.1         
 [34] abind_1.4-8             httr_1.4.7              pkgconfig_2.0.3        
-[37] tools_4.4.1             UCSC.utils_1.0.0       
+[37] tools_4.4.2             UCSC.utils_1.0.0       
 ```
 
 ::: keypoints

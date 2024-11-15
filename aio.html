@@ -329,7 +329,7 @@
         
 <section id="aio-01-intro-to-rnaseq"><p>Content from <a href="01-intro-to-rnaseq.html">Introduction to RNA-seq</a></p>
 <hr>
-<p> Last updated on 2024-11-13 |
+<p> Last updated on 2024-11-15 |
 
         <a href="https://github.com/otagobioinformaticsspringschool/bioc-rnaseq/edit/main/episodes/01-intro-to-rnaseq.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <div class="text-end">
@@ -583,32 +583,19 @@ and <a href="https://fungi.ensembl.org/info/data/ftp/index.html" class="external
 <a href="https://hgdownload.soe.ucsc.edu/downloads.html" class="external-link">UCSC</a>
 also provides reference files for many organisms.</li>
 </ul>
-<div id="challenge" class="callout discussion">
-<div class="callout-square">
-<i class="callout-icon" data-feather="message-circle"></i>
-</div>
-<div id="challenge" class="callout-inner">
-<h3 class="callout-title">Challenge</h3>
-<div class="callout-content">
-<p>Download the latest mouse transcriptome fasta file from GENCODE. What
-do the entries look like? Tip: to read the file into R, consider the
-<code>readDNAStringSet()</code> function from the
-<code>Biostrings</code> package.</p>
-</div>
-</div>
-</div>
 </div>
 <div class="section level1">
 <h1 id="where-are-we-heading-towards-in-this-workshop">Where are we heading towards in this workshop?<a class="anchor" aria-label="anchor" href="#where-are-we-heading-towards-in-this-workshop"></a>
 </h1>
-<p>During the coming two days, we will discuss and practice how to
-perform differential expression analysis with Bioconductor, and how to
-interpret the results. We will start from a count matrix, and thus
-assume that the initial quality assessment and quantification of gene
-expression have already been done. The outcome of a differential
-expression analysis is often represented using graphical
-representations, such as MA plots and heatmaps (see below for
-examples).</p>
+<p>During this workshop we will discuss and practice how to perform
+differential expression analysis with Bioconductor, and how to interpret
+the results. We will start from a count matrix, and thus assume that the
+initial quality assessment and quantification of gene expression have
+already been done. If you would like to see one example of a quality
+assessment workflow, you can find one <a href="https://tylermcinnes.github.io/RNA-seq-data-analysis-workflow/episode_2.html" class="external-link">here</a>.</p>
+<p>The outcome of a differential expression analysis is often
+represented using graphical representations, such as MA plots and
+heatmaps (see below for examples).</p>
 <p><img src="fig/maPlot-example.png" alt="An example MA plot" class="figure"><img src="fig/heatmap-example.png" alt="An example heatmap" class="figure"></p>
 <p>In the following episodes we will learn, among other things, how to
 generate and interpret these plots. It is also common to perform
@@ -644,7 +631,7 @@ sources, including Ensembl, UCSC and GENCODE.</li>
 </div>
 </div></section><section id="aio-02-setup"><p>Content from <a href="02-setup.html">RStudio Project and Experimental Data</a></p>
 <hr>
-<p> Last updated on 2024-11-13 |
+<p> Last updated on 2024-11-15 |
 
         <a href="https://github.com/otagobioinformaticsspringschool/bioc-rnaseq/edit/main/episodes/02-setup.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <div class="text-end">
@@ -790,7 +777,7 @@ directory, create the four fundamental directories previously discussed
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <figure style="text-align: center"><img src="fig/02_setup/folders_working_dir.png" alt="Your working directory should look like this" width="1221" class="figure mx-auto d-block"><figcaption>
 Your working directory should look like this
@@ -933,7 +920,7 @@ into the <code>data</code> folder in your working directory.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb2">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -979,7 +966,7 @@ downloading datasets from the internet.</li>
 </div>
 </section></section><section id="aio-03-import-annotate"><p>Content from <a href="03-import-annotate.html">Importing and annotating quantified data into R</a></p>
 <hr>
-<p> Last updated on 2024-11-13 |
+<p> Last updated on 2024-11-15 |
 
         <a href="https://github.com/otagobioinformaticsspringschool/bioc-rnaseq/edit/main/episodes/03-import-annotate.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <div class="text-end">
@@ -1088,9 +1075,9 @@ that lets us look at the data and even sort the table by a particular
 column. However, the viewer cannot change the data inside the
 <code>counts</code> object, so we can only look, not permanently sort
 nor edit the entries. When finished, close the viewer using the X in the
-tab. Looks like the rownames are gene symbols and the column names are
-the GEO sample IDs, which are not very informative for telling us which
-sample is what.</p>
+tab. It looks like the rownames are gene symbols and the column names
+are the GEO sample IDs, which are not very informative for telling us
+which sample is what.</p>
 </div>
 <div class="section level3">
 <h3 id="sample-annotations">Sample annotations<a class="anchor" aria-label="anchor" href="#sample-annotations"></a>
@@ -1120,6 +1107,9 @@ in the count matrix, we will name the object <code>coldata</code>:</p>
 we have 10 columns of information. The columns that are the most useful
 for this workshop are <code>geo_accession</code> (GEO sample IDs again),
 <code>sex</code> and <code>time</code>.</p>
+<p>It is often the case that we will have multiple objects with
+important information, and we will need to cross reference and compare
+the objects to get the full picture.</p>
 </div>
 <div class="section level3">
 <h3 id="gene-annotations">Gene annotations<a class="anchor" aria-label="anchor" href="#gene-annotations"></a>
@@ -1127,8 +1117,13 @@ for this workshop are <code>geo_accession</code> (GEO sample IDs again),
 <p>The counts only have gene symbols, which while short and somewhat
 recognizable to the human brain, are not always good absolute
 identifiers for exactly what gene was measured. For this we need
-additional gene annotations that were provided by the authors. The
-<code>count</code> and <code>coldata</code> files were in comma
+additional gene annotations that were provided by the authors. We will
+import this data using a new function, read.delim(). Why are we using a
+new function, and not read.csv() like we did above? Some files have
+contents, like commas or quotation marks, that mean we need to use
+specialised functions. This is explained in the next paragraph - skip
+this if you are brand new to R and don’t yet need the detail.</p>
+<p>The <code>count</code> and <code>coldata</code> files were in comma
 separated value (.csv) format, but we cannot use that for our gene
 annotation file because the descriptions can contain commas that would
 prevent a .csv file from being read in correctly. Instead the gene
@@ -1218,7 +1213,7 @@ have to do to remove those (generally speaking, not exact codes)?</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <ol style="list-style-type: decimal">
 <li>In <code>counts</code>, the rows are genes just like the rows in
@@ -1238,8 +1233,8 @@ first two samples.</li>
 easily lead to mis-matches between our counts, gene annotations and
 sample annotations. This is why Bioconductor has created a specialized
 S4 class called a <code>SummarizedExperiment</code>. The details of a
-<code>SummarizedExperiment</code> were covered extensively at the end of
-the <a href="https://carpentries-incubator.github.io/bioc-intro/60-next-steps.html#next-steps" class="external-link">Introduction
+<code>SummarizedExperiment</code> object are covered extensively at the
+end of the <a href="https://carpentries-incubator.github.io/bioc-intro/60-next-steps.html#next-steps" class="external-link">Introduction
 to data analysis with R and Bioconductor</a> workshop. As a reminder,
 let’s take a look at the figure below representing the anatomy of the
 <code>SummarizedExperiment</code> class:</p>
@@ -1344,7 +1339,7 @@ codes.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb19">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -1615,8 +1610,54 @@ Sox17              20671 SRY (sex determining..        mRNA</code></pre>
 </h3>
 <pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">colnames</span><span class="op">(</span><span class="va">se</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">se</span><span class="op">$</span><span class="va">Label</span></span>
-<span></span>
-<span><span class="co"># Our samples are not in order based on sex and time</span></span>
+<span><span class="co"># Now when we look at the se object, we have informative sample IDs:</span></span>
+<span><span class="fu">head</span><span class="op">(</span><span class="fu">assay</span><span class="op">(</span><span class="va">se</span><span class="op">)</span><span class="op">)</span></span></code></pre>
+</div>
+<div class="codewrapper">
+<h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="output" tabindex="0"><code>             Female_Day8_14 Female_Day0_9 Female_Day0_10 Female_Day4_15
+Xkr4                   1891          2410           2159           1980
+LOC105243853              0             0              1              4
+LOC105242387            204           121            110            120
+LOC105242467             12             5              5              5
+Rp1                       2             2              0              3
+Sox17                   251           239            218            220
+             Male_Day4_18 Male_Day8_6 Female_Day8_5 Male_Day0_11 Female_Day4_22
+Xkr4                 1977        1945          1757         2235           1779
+LOC105243853            0           0             1            3              3
+LOC105242387          172         173           177          130            131
+LOC105242467            2           6             3            2              2
+Rp1                     2           1             3            1              1
+Sox17                 261         232           179          296            233
+             Male_Day4_13 Male_Day8_23 Male_Day8_24 Female_Day0_8 Male_Day0_7
+Xkr4                 1528         1644         1585          2275        1881
+LOC105243853            0            1            3             1           0
+LOC105242387          160          180          176           161         154
+LOC105242467            2            1            2             2           4
+Rp1                     2            2            2             3           6
+Sox17                 271          205          230           302         286
+             Male_Day4_1 Female_Day8_16 Female_Day4_21 Female_Day0_4
+Xkr4                2584           1837           1890          1910
+LOC105243853           0              1              1             0
+LOC105242387         124            221            272           214
+LOC105242467           7              1              3             1
+Rp1                    5              3              5             1
+Sox17                325            201            267           322
+             Male_Day0_2 Female_Day4_20 Male_Day4_12 Female_Day8_19
+Xkr4                1771           2315         1645           1723
+LOC105243853           0              1            0              1
+LOC105242387         124            189          223            251
+LOC105242467           4              2            1              4
+Rp1                    3              3            1              0
+Sox17                273            197          310            246</code></pre>
+</div>
+<div class="codewrapper sourceCode" id="cb43">
+<h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
+</h3>
+<pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Now we will group our samples based on sex and time. </span></span>
+<span><span class="co"># First, create a variable called group:</span></span>
 <span><span class="va">se</span><span class="op">$</span><span class="va">Group</span> <span class="op">&lt;-</span> <span class="fu">paste</span><span class="op">(</span><span class="va">se</span><span class="op">$</span><span class="va">sex</span>, <span class="va">se</span><span class="op">$</span><span class="va">time</span>, sep <span class="op">=</span> <span class="st">"_"</span><span class="op">)</span></span>
 <span><span class="va">se</span><span class="op">$</span><span class="va">Group</span></span></code></pre>
 </div>
@@ -1629,12 +1670,13 @@ Sox17              20671 SRY (sex determining..        mRNA</code></pre>
 [16] "Female_Day8" "Female_Day4" "Female_Day0" "Male_Day0"   "Female_Day4"
 [21] "Male_Day4"   "Female_Day8"</code></pre>
 </div>
-<div class="codewrapper sourceCode" id="cb43">
+<div class="codewrapper sourceCode" id="cb45">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># change this to factor data with the levels in order </span></span>
-<span><span class="co"># that we want, then rearrange the se object:</span></span>
+<code class="sourceCode R"><span><span class="co"># Now we want to re-order all samples so they are grouped. To do this, we must </span></span>
+<span><span class="co"># a) tell R to treat the data as a factor (a special type of data) </span></span>
+<span><span class="co"># b) manually specify the order of the groups:</span></span>
 <span></span>
 <span><span class="va">se</span><span class="op">$</span><span class="va">Group</span> <span class="op">&lt;-</span> <span class="fu">factor</span><span class="op">(</span><span class="va">se</span><span class="op">$</span><span class="va">Group</span>, levels <span class="op">=</span> <span class="fu">c</span><span class="op">(</span><span class="st">"Female_Day0"</span>,<span class="st">"Male_Day0"</span>, </span>
 <span>                                        <span class="st">"Female_Day4"</span>,<span class="st">"Male_Day4"</span>,</span>
@@ -1686,7 +1728,7 @@ Male_Day8_6            6    Male_Day8_6 Male_Day8
 Male_Day8_23          23   Male_Day8_23 Male_Day8
 Male_Day8_24          24   Male_Day8_24 Male_Day8  </code></pre>
 </div>
-<div class="codewrapper sourceCode" id="cb45">
+<div class="codewrapper sourceCode" id="cb47">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -1722,9 +1764,9 @@ day 8?</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution3" aria-expanded="false" aria-controls="collapseSolution3">
   <h4 class="accordion-header" id="headingSolution3"> Show me the solution </h4>
 </button>
-<div id="collapseSolution3" class="accordion-collapse collapse" aria-labelledby="headingSolution3" data-bs-parent="#accordionSolution3">
+<div id="collapseSolution3" class="accordion-collapse collapse" data-bs-parent="#accordionSolution3" aria-labelledby="headingSolution3">
 <div class="accordion-body">
-<div class="codewrapper sourceCode" id="cb46">
+<div class="codewrapper sourceCode" id="cb48">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -1738,7 +1780,7 @@ day 8?</li>
  InfluenzaA NonInfected
          15           7 </code></pre>
 </div>
-<div class="codewrapper sourceCode" id="cb48">
+<div class="codewrapper sourceCode" id="cb50">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -1757,7 +1799,7 @@ day 8?</li>
 <pre class="output" tabindex="0"><code>     Min.   1st Qu.    Median      Mean   3rd Qu.      Max.
     0.000     0.133     2.867   764.068   337.417 18896.600 </code></pre>
 </div>
-<div class="codewrapper sourceCode" id="cb50">
+<div class="codewrapper sourceCode" id="cb52">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -1769,7 +1811,7 @@ day 8?</li>
 <pre class="output" tabindex="0"><code>     Min.   1st Qu.    Median      Mean   3rd Qu.      Max.
     0.000     0.143     3.143   771.017   366.571 20010.143 </code></pre>
 </div>
-<div class="codewrapper sourceCode" id="cb52">
+<div class="codewrapper sourceCode" id="cb54">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -1795,7 +1837,7 @@ single file on our computer to read it back in to R’s memory if we have
 to shut down RStudio. To save an R-specific file we can use the
 <code>saveRDS()</code> function and later read it back into R using the
 <code>readRDS()</code> function.</p>
-<div class="codewrapper sourceCode" id="cb54">
+<div class="codewrapper sourceCode" id="cb56">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -1850,9 +1892,9 @@ codes and then check you correctly got the 21,198 mRNA genes:</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution4" aria-expanded="false" aria-controls="collapseSolution4">
   <h4 class="accordion-header" id="headingSolution4"> Show me the solution </h4>
 </button>
-<div id="collapseSolution4" class="accordion-collapse collapse" aria-labelledby="headingSolution4" data-bs-parent="#accordionSolution4">
+<div id="collapseSolution4" class="accordion-collapse collapse" data-bs-parent="#accordionSolution4" aria-labelledby="headingSolution4">
 <div class="accordion-body">
-<div class="codewrapper sourceCode" id="cb55">
+<div class="codewrapper sourceCode" id="cb57">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -1904,7 +1946,7 @@ resources are covered in more detail in <a href="https://carpentries-incubator.g
 <li>
 <em>keytype</em> is the type of key used</li>
 </ul>
-<div class="codewrapper sourceCode" id="cb58">
+<div class="codewrapper sourceCode" id="cb60">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -1927,7 +1969,7 @@ columns through an additional argument, <code>multiVals</code>. The
 below example demonstrate this functionality using the
 <code>hgu95av2.db</code> package, an Affymetrix Human Genome U95 Set
 annotation data.</p>
-<div class="codewrapper sourceCode" id="cb61">
+<div class="codewrapper sourceCode" id="cb63">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -1947,7 +1989,7 @@ annotation data.</p>
 <pre class="output" tabindex="0"><code>       10       100      1000     10000 100008586     10001
    "AAC2"    "ADA1"   "ACOGS"    "MPPH"     "AL4"   "ARC33" </code></pre>
 </div>
-<div class="codewrapper sourceCode" id="cb64">
+<div class="codewrapper sourceCode" id="cb66">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -1968,7 +2010,7 @@ annotation data.</p>
 <pre class="output" tabindex="0"><code>       10       100      1000     10000 100008586     10001
    "NAT2"     "ADA"    "CDH2"    "AKT3" "GAGE12F"    "MED6" </code></pre>
 </div>
-<div class="codewrapper sourceCode" id="cb67">
+<div class="codewrapper sourceCode" id="cb69">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -2007,7 +2049,7 @@ $`10001`
 </section><section><h2 class="section-heading" id="session-info">Session info<a class="anchor" aria-label="anchor" href="#session-info"></a>
 </h2>
 <hr class="half-width">
-<div class="codewrapper sourceCode" id="cb70">
+<div class="codewrapper sourceCode" id="cb72">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
@@ -2016,7 +2058,7 @@ $`10001`
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="output" tabindex="0"><code>R version 4.4.1 (2024-06-14)
+<pre class="output" tabindex="0"><code>R version 4.4.2 (2024-10-31)
 Platform: x86_64-pc-linux-gnu
 Running under: Ubuntu 22.04.5 LTS
 
@@ -2048,7 +2090,7 @@ other attached packages:
 
 loaded via a namespace (and not attached):
  [1] Matrix_1.7-1            bit_4.5.0               jsonlite_1.8.9
- [4] highr_0.11              compiler_4.4.1          BiocManager_1.30.25
+ [4] highr_0.11              compiler_4.4.2          BiocManager_1.30.25
  [7] renv_1.0.11             crayon_1.5.3            blob_1.2.4
 [10] Biostrings_2.72.1       png_0.1-8               fastmap_1.2.0
 [13] yaml_2.3.10             lattice_0.22-6          R6_2.5.1
@@ -2057,9 +2099,9 @@ loaded via a namespace (and not attached):
 [22] KEGGREST_1.44.1         cachem_1.1.0            xfun_0.49
 [25] bit64_4.5.2             memoise_2.0.1           SparseArray_1.4.8
 [28] RSQLite_2.3.7           cli_3.6.3               zlibbioc_1.50.0
-[31] grid_4.4.1              vctrs_0.6.5             evaluate_1.0.1
+[31] grid_4.4.2              vctrs_0.6.5             evaluate_1.0.1
 [34] abind_1.4-8             httr_1.4.7              pkgconfig_2.0.3
-[37] tools_4.4.1             UCSC.utils_1.0.0       </code></pre>
+[37] tools_4.4.2             UCSC.utils_1.0.0       </code></pre>
 </div>
 <div id="keypoints1" class="callout keypoints">
 <div class="callout-square">
@@ -2082,7 +2124,7 @@ analysis, with gene symbols added for easier interpretation.</li>
 </div>
 </section></section><section id="aio-04-exploratory-qc"><p>Content from <a href="04-exploratory-qc.html">Exploratory analysis and quality control</a></p>
 <hr>
-<p> Last updated on 2024-11-13 |
+<p> Last updated on 2024-11-15 |
 
         <a href="https://github.com/otagobioinformaticsspringschool/bioc-rnaseq/edit/main/episodes/04-exploratory-qc.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <div class="text-end">
@@ -2148,7 +2190,7 @@ object we created in the last lesson.</p>
 <pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">se</span> <span class="op">&lt;-</span> <span class="fu">readRDS</span><span class="op">(</span><span class="st">"data/GSE96870_se.rds"</span><span class="op">)</span></span></code></pre>
 </div>
-</section><section><h2 class="section-heading" id="remove-unexpressed-genes">Remove unexpressed genes<a class="anchor" aria-label="anchor" href="#remove-unexpressed-genes"></a>
+</section><section><h2 class="section-heading" id="exploratory-data-analysis">Exploratory data analysis<a class="anchor" aria-label="anchor" href="#exploratory-data-analysis"></a>
 </h2>
 <hr class="half-width">
 <p>Exploratory analysis is crucial for quality control and to get to
@@ -2157,15 +2199,18 @@ contamination, as well as give us a sense of the most salient patterns
 present in the data. In this episode, we will learn about two common
 ways of performing exploratory analysis for RNA-seq data; namely
 clustering and principal component analysis (PCA). These tools are in no
-way limited to (or developed for) analysis of RNA-seq data. However,
-there are certain characteristics of count assays that need to be taken
-into account when they are applied to this type of data. First of all,
-not all mouse genes in the genome will be expressed in our Cerebellum
-samples. There are many different threshold you could use to say whether
-a gene’s expression was detectable or not; here we are going to use a
-very minimal one that if a gene does not have more than 5 counts total
-across all samples, there is simply not enough data to be able to do
-anything with it anyway.</p>
+way limited to (or developed for) analysis of RNA-seq data.</p>
+</section><section><h2 class="section-heading" id="remove-unexpressed-genes">Remove unexpressed genes<a class="anchor" aria-label="anchor" href="#remove-unexpressed-genes"></a>
+</h2>
+<hr class="half-width">
+<p>However, there are certain characteristics of count assays that need
+to be taken into account when they are applied to this type of data.
+First of all, not all mouse genes in the genome will be expressed in our
+Cerebellum samples. There are many different threshold you could use to
+say whether a gene’s expression was detectable or not; here we are going
+to use a very minimal one that if a gene does not have more than 5
+counts total across all samples, there is simply not enough data to be
+able to do anything with it anyway.</p>
 <div class="codewrapper sourceCode" id="cb3">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -2214,7 +2259,7 @@ important considerations?</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <ol style="list-style-type: decimal"><li>
 </li></ol>
@@ -2269,14 +2314,11 @@ important considerations?</li>
 <pre class="output" tabindex="0"><code>[1] 23860</code></pre>
 </div>
 <ol start="3" style="list-style-type: decimal">
-<li>Cons: Risk of removing interesting information Pros:</li>
+<li>Cons: Risk of removing interesting information</li>
 </ol>
-<ul>
-<li>Not or lowly expressed genes are unlikely to be biological
-meaningful.</li>
-<li>Reduces number of statistical tests (multiple testing).</li>
-<li>More reliable estimation of mean-variance relationship</li>
-</ul>
+<p>Pros: - Not or lowly expressed genes are unlikely to be biological
+meaningful. - Reduces number of statistical tests (multiple testing). -
+More reliable estimation of mean-variance relationship</p>
 <p>Potential considerations: - Is a gene expressed in both groups? - How
 many samples of each group express a gene?</p>
 </div>
@@ -2373,9 +2415,19 @@ design formula are characters, converting to factors</code></pre>
 <hr class="half-width">
 <p>There is a rich literature on methods for exploratory analysis. Most
 of these work best in situations where the variance of the input data
-(here, each gene) is relatively independent of the average value. For
-read count data such as RNA-seq, this is not the case. In fact, the
-variance increases with the average read count.</p>
+(here, each gene) is relatively independent of the average value. We
+will introduce a specific term for this: <em>homoskedasticity</em>. If
+data is not homoskedastic, it is instead heteroskedastic - there is a
+relationship between variance and mean. One analogy for understanding
+heteroskedasticity is income vs expenditure:</p>
+<ul>
+<li><p>Students generally don’t have much money, so their weekly food
+bill is relatively stable with low variance.</p></li>
+<li><p>Vice chancellors make a lot more money, and will sometimes have
+very expensive meals, leading to high variance.</p></li>
+</ul>
+<p>For read count data such as RNA-seq, this is not the case. In fact,
+the variance increases with the average read count.</p>
 <div class="codewrapper sourceCode" id="cb19">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -2396,7 +2448,12 @@ the correlation between average read count and variance.</p>
 <code class="sourceCode R"><span><span class="va">vsd</span> <span class="op">&lt;-</span> <span class="fu">DESeq2</span><span class="fu">::</span><span class="fu">vst</span><span class="op">(</span><span class="va">dds</span>, blind <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="fu">meanSdPlot</span><span class="op">(</span><span class="fu">assay</span><span class="op">(</span><span class="va">vsd</span><span class="op">)</span>, ranks <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre>
 </div>
-<figure><img src="fig/04-exploratory-qc-rendered-mean-sd-plot-vst-1.png" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure></section><section><h2 class="section-heading" id="heatmaps-and-clustering">Heatmaps and clustering<a class="anchor" aria-label="anchor" href="#heatmaps-and-clustering"></a>
+<figure><img src="fig/04-exploratory-qc-rendered-mean-sd-plot-vst-1.png" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><p>What have we done here? After transformation, the variance is
+approximately uniform across a range of average read counts. VST shrinks
+the low-count observations to reduce their variability (low-count reads
+tend to look very noisy) and shrinks high counts to reduce the impact
+they have on the overall variance structure of the dataset.</p>
+</section><section><h2 class="section-heading" id="heatmaps-and-clustering">Heatmaps and clustering<a class="anchor" aria-label="anchor" href="#heatmaps-and-clustering"></a>
 </h2>
 <hr class="half-width">
 <p>There are many ways to cluster samples based on their similarity of
@@ -2462,7 +2519,11 @@ visualization.</p>
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">percentVar</span> <span class="op">&lt;-</span> <span class="fu">round</span><span class="op">(</span><span class="fl">100</span> <span class="op">*</span> <span class="fu">attr</span><span class="op">(</span><span class="va">pcaData</span>, <span class="st">"percentVar"</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># plotPCA is performing PCA and returns the data as a data-frame (rather than a figure).                           </span></span>
+<span></span>
+<span><span class="va">percentVar</span> <span class="op">&lt;-</span> <span class="fu">round</span><span class="op">(</span><span class="fl">100</span> <span class="op">*</span> <span class="fu">attr</span><span class="op">(</span><span class="va">pcaData</span>, <span class="st">"percentVar"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># This is the proportion of variance explained by each principal component, displayed as a percentage. </span></span>
+<span></span>
 <span><span class="fu">ggplot</span><span class="op">(</span><span class="va">pcaData</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">PC1</span>, y <span class="op">=</span> <span class="va">PC2</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu">geom_point</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>color <span class="op">=</span> <span class="va">sex</span>, shape <span class="op">=</span> <span class="va">time</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">5</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu">theme_minimal</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
@@ -2471,7 +2532,9 @@ visualization.</p>
 <span>    <span class="fu">coord_fixed</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>    <span class="fu">scale_color_manual</span><span class="op">(</span>values <span class="op">=</span> <span class="fu">c</span><span class="op">(</span>Male <span class="op">=</span> <span class="st">"blue"</span>, Female <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span><span class="op">)</span></span></code></pre>
 </div>
-<figure><img src="fig/04-exploratory-qc-rendered-pca-1.png" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><div id="challenge-discuss-the-following-points-with-your-neighbour" class="callout discussion">
+<figure><img src="fig/04-exploratory-qc-rendered-pca-1.png" style="display: block; margin: auto;" class="figure mx-auto d-block"></figure><p>This section is concluded here for OBSS 2024, but we do suggest you
+look at the challenges and extension topics below.</p>
+<div id="challenge-discuss-the-following-points-with-your-neighbour" class="callout discussion">
 <div class="callout-square">
 <i class="callout-icon" data-feather="message-circle"></i>
 </div>
@@ -2501,7 +2564,7 @@ suggest?</p></li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
 <div class="accordion-body">
 <ol style="list-style-type: decimal">
 <li><p>The major signal in this data (37% variance) is associated with
@@ -2544,7 +2607,7 @@ class <code>DESeqTransform</code> as input. You can transform a
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution3" aria-expanded="false" aria-controls="collapseSolution3">
   <h4 class="accordion-header" id="headingSolution3"> Show me the solution </h4>
 </button>
-<div id="collapseSolution3" class="accordion-collapse collapse" aria-labelledby="headingSolution3" data-bs-parent="#accordionSolution3">
+<div id="collapseSolution3" class="accordion-collapse collapse" data-bs-parent="#accordionSolution3" aria-labelledby="headingSolution3">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb26">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -2650,7 +2713,7 @@ and <a href="https://bioconductor.org/packages/release/bioc/html/iSEE.html" clas
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="output" tabindex="0"><code>R version 4.4.1 (2024-06-14)
+<pre class="output" tabindex="0"><code>R version 4.4.2 (2024-10-31)
 Platform: x86_64-pc-linux-gnu
 Running under: Ubuntu 22.04.5 LTS
 
@@ -2684,7 +2747,7 @@ other attached packages:
 
 loaded via a namespace (and not attached):
  [1] rlang_1.1.4             magrittr_2.0.3          shinydashboard_0.7.2
- [4] clue_0.3-65             GetoptLong_1.0.5        compiler_4.4.1
+ [4] clue_0.3-65             GetoptLong_1.0.5        compiler_4.4.2
  [7] mgcv_1.9-1              png_0.1-8               vctrs_0.6.5
 [10] pkgconfig_2.0.3         shape_1.4.6.1           crayon_1.5.3
 [13] fastmap_1.2.0           XVector_0.44.0          labeling_0.4.3
@@ -2692,11 +2755,11 @@ loaded via a namespace (and not attached):
 [19] UCSC.utils_1.0.0        preprocessCore_1.66.0   xfun_0.49
 [22] cachem_1.1.0            zlibbioc_1.50.0         jsonlite_1.8.9
 [25] listviewer_4.0.0        highr_0.11              later_1.3.2
-[28] DelayedArray_0.30.1     BiocParallel_1.38.0     parallel_4.4.1
+[28] DelayedArray_0.30.1     BiocParallel_1.38.0     parallel_4.4.2
 [31] cluster_2.1.6           R6_2.5.1                bslib_0.8.0
 [34] limma_3.60.6            jquerylib_0.1.4         Rcpp_1.0.13-1
 [37] iterators_1.0.14        knitr_1.48              httpuv_1.6.15
-[40] Matrix_1.7-1            splines_4.4.1           igraph_2.1.1
+[40] Matrix_1.7-1            splines_4.4.2           igraph_2.1.1
 [43] tidyselect_1.2.1        abind_1.4-8             yaml_2.3.10
 [46] doParallel_1.0.17       codetools_0.2-20        affy_1.82.0
 [49] miniUI_0.1.1.1          lattice_0.22-6          tibble_3.2.1
@@ -2705,7 +2768,7 @@ loaded via a namespace (and not attached):
 [58] BiocManager_1.30.25     renv_1.0.11             DT_0.33
 [61] foreach_1.5.2           shinyjs_2.1.0           generics_0.1.3
 [64] munsell_0.5.1           scales_1.3.0            xtable_1.8-4
-[67] glue_1.8.0              tools_4.4.1             colourpicker_1.3.0
+[67] glue_1.8.0              tools_4.4.2             colourpicker_1.3.0
 [70] locfit_1.5-9.10         colorspace_2.1-1        nlme_3.1-166
 [73] GenomeInfoDbData_1.2.12 vipor_0.4.7             cli_3.6.3
 [76] fansi_1.0.6             viridisLite_0.4.2       S4Arrays_1.4.1
@@ -2737,7 +2800,7 @@ work directly on the raw counts.</li>
 </div>
 </section></section><section id="aio-05-differential-expression"><p>Content from <a href="05-differential-expression.html">Differential expression analysis</a></p>
 <hr>
-<p> Last updated on 2024-11-13 |
+<p> Last updated on 2024-11-15 |
 
         <a href="https://github.com/otagobioinformaticsspringschool/bioc-rnaseq/edit/main/episodes/05-differential-expression.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <div class="text-end">
@@ -3430,7 +3493,7 @@ beneficial.</li>
 </div>
 </section></section><section id="aio-06-extra-design"><p>Content from <a href="06-extra-design.html">Extra exploration of design matrices</a></p>
 <hr>
-<p> Last updated on 2024-11-13 |
+<p> Last updated on 2024-11-15 |
 
         <a href="https://github.com/otagobioinformaticsspringschool/bioc-rnaseq/edit/main/episodes/06-extra-design.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <div class="text-end">
@@ -3793,7 +3856,7 @@ mean expression of a gene between male and female mice?</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb19">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -3880,7 +3943,7 @@ Day4, Day8) in the male spinal cord samples, and visualize it using
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb25">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -5092,7 +5155,7 @@ linear combinations of the model coefficients.</li>
 </div>
 </section></section><section id="aio-07-gene-set-analysis"><p>Content from <a href="07-gene-set-analysis.html">Gene set enrichment analysis</a></p>
 <hr>
-<p> Last updated on 2024-11-13 |
+<p> Last updated on 2024-11-15 |
 
         <a href="https://github.com/otagobioinformaticsspringschool/bioc-rnaseq/edit/main/episodes/07-gene-set-analysis.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <div class="text-end">
@@ -5688,9 +5751,9 @@ distribution of its statistic.</p>
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
 <pre class="output" tabindex="0"><code>Unit: microseconds
-   expr     min       lq      mean   median       uq     max neval
- fisher 238.585 241.6050 250.60479 245.3420 250.0510 521.652   100
-  hyper   1.493   1.6785   2.49853   2.4045   2.9505  16.721   100</code></pre>
+   expr     min      lq      mean  median      uq     max neval
+ fisher 240.318 244.406 255.15359 247.190 252.651 550.086   100
+  hyper   1.463   1.663   2.45419   2.404   2.780  18.234   100</code></pre>
 </div>
 <p>It is very astonishing that <code>phyper()</code> is hundreds of
 times faster than <code>fisher.test()</code>. Main reason is in
@@ -5848,7 +5911,7 @@ convert a list to a two-column data frame?</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb38">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -6505,7 +6568,7 @@ sets are automatically retrieved and processed from
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
-<pre class="output" tabindex="0"><code>--&gt; Expected input gene ID: 64050,213541,97165,223921,232210,353188</code></pre>
+<pre class="output" tabindex="0"><code>--&gt; Expected input gene ID: 17427,23967,20535,331046,54137,53422</code></pre>
 </div>
 <div class="codewrapper">
 <h3 class="code-label">OUTPUT<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -7524,7 +7587,7 @@ topological relations in the GO hierarchy.<a href="#fnref7" class="footnote-back
 </ol>
 </div></section><section id="aio-08-next-steps"><p>Content from <a href="08-next-steps.html">Next steps</a></p>
 <hr>
-<p> Last updated on 2024-11-13 |
+<p> Last updated on 2024-11-15 |
 
         <a href="https://github.com/otagobioinformaticsspringschool/bioc-rnaseq/edit/main/episodes/08-next-steps.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <div class="text-end">
@@ -7671,8 +7734,8 @@ quantified.</li>
   "url": "https://otagobioinformaticsspringschool.github.io/bioc-rnaseq/aio.html",
   "identifier": "https://otagobioinformaticsspringschool.github.io/bioc-rnaseq/aio.html",
   "dateCreated": "2020-09-15",
-  "dateModified": "2024-11-13",
-  "datePublished": "2024-11-13"
+  "dateModified": "2024-11-15",
+  "datePublished": "2024-11-15"
 }
 
   </script><script>

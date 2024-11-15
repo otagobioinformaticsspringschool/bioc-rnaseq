@@ -98,6 +98,7 @@ length(which(rowSums(assay(se, "counts")) > 20))
 
 3.
 Cons: Risk of removing interesting information
+
 Pros: 
  - Not or lowly expressed genes are unlikely to be biological meaningful.
  - Reduces number of statistical tests (multiple testing).
@@ -163,7 +164,16 @@ ggplot(data.frame(libSize = colSums(assay(dds)),
 ## Transform data
 
 There is a rich literature on methods for exploratory analysis.
-Most of these work best in situations where the variance of the input data (here, each gene) is relatively independent of the average value.
+Most of these work best in situations where the variance of the input data (here, each gene) is relatively independent of the average value. 
+We will introduce a specific term for this: *homoskedasticity*. If data is not homoskedastic, it is instead heteroskedastic - there is a relationship between variance and mean.
+One analogy for understanding heteroskedasticity is income vs expenditure: 
+
+- Students generally don't have much money, so their weekly food bill is relatively stable with low variance. 
+
+- Vice chancellors make a lot more money, and will sometimes have very expensive meals, leading to high variance.
+
+
+
 For read count data such as RNA-seq, this is not the case.
 In fact, the variance increases with the average read count.
 
@@ -178,6 +188,9 @@ Both ways have been explored; however, at the moment the second approach is argu
 vsd <- DESeq2::vst(dds, blind = TRUE)
 meanSdPlot(assay(vsd), ranks = FALSE)
 ```
+
+What have we done here? After transformation, the variance is approximately uniform across a range of average read counts.
+VST shrinks the low-count observations to reduce their variability (low-count reads tend to look very noisy) and shrinks high counts to reduce the impact they have on the overall variance structure of the dataset.
 
 ## Heatmaps and clustering
 
@@ -215,7 +228,11 @@ The fraction of explained variance is a measure of how much of the 'signal' in t
 ```{r pca}
 pcaData <- DESeq2::plotPCA(vsd, intgroup = c("sex", "time"),
                            returnData = TRUE)
+# plotPCA is performing PCA and returns the data as a data-frame (rather than a figure).                           
+
 percentVar <- round(100 * attr(pcaData, "percentVar"))
+# This is the proportion of variance explained by each principal component, displayed as a percentage. 
+
 ggplot(pcaData, aes(x = PC1, y = PC2)) +
     geom_point(aes(color = sex, shape = time), size = 5) +
     theme_minimal() +
@@ -224,6 +241,11 @@ ggplot(pcaData, aes(x = PC1, y = PC2)) +
     coord_fixed() + 
     scale_color_manual(values = c(Male = "blue", Female = "red"))
 ```
+
+
+This section is concluded here for OBSS 2024, but we do suggest you look at the challenges and extension topics below.
+
+
 
 :::::::::::::::::::::::::::::::::::::::  challenge
 

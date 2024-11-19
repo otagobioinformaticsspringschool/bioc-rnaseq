@@ -116,6 +116,17 @@ dds <- estimateSizeFactors(dds)
 
 ### Dispersion
 
+Dispersion (or dispersion estimates) are a measure of variability in gene expression that exceeds what is expected from random sampling.
+Real RNA-seq data often displays a greater degree of gene-level variation than is expected (under a Poisson model), which is thought to be due to biological and technical factors. 
+Dispersion estimates are an attempt to quantify this 'additional' variability by comparing the observed variance to the mean. 
+By calculating dispersion, we gain useful information about the natural variability in our data, which allows us to make more accurate statistical inferences.
+This includes, but is not limited to:
+- Differenting biological from technical sources.
+- Fitting accurate models of gene expression.
+- Dealing with across-gene differences.
+
+
+
 The within-group variance of the counts for a gene following a negative binomial distribution with mean $\mu$ can be modeled as:
 
 $var = \mu + \theta \mu^2$
@@ -130,7 +141,20 @@ plotDispEsts(dds)
 
 ### Testing
 
-We can use the `nbinomWaldTest()`function of `DESeq2` to fit a *generalized linear model (GLM)* and compute *log2 fold changes* (synonymous with "GLM coefficients", "beta coefficients" or "effect size") corresponding to the variables of the *design matrix*. The *design matrix* is directly related to the *design formula* and automatically derived from it. Assume a design formula with one variable (`~ treatment`) and two factor levels (treatment and control). The mean expression $\mu_{j}$ of a specific gene in sample $j$ will be modeled as following:
+We can now perform a test to identify differentially expressed genes between the treatment groups.
+
+This will be done in three steps, with a single function:
+- Step 1: Fit a negative binomial model. 
+- Step 2: Calculate the log fold change (logFC) for each gene. Estimate the logFC in expression between samples in the different conditions (in our case, Day0 vs Day8).
+- Step 3: Conduct a Wald test to calculate whether the estimated fold change is statistically significant.
+    - Then convert the ouput of the Wald test to a p value, which is used to accept or reject the null hypothesis of no significant difference.
+
+What is the Wald test? The Wald test is conceptually similar to a t-Test, but is specifically suited for use with linear models and non-normal data (as we have here, with the negative binomial distribution).
+
+
+We can use the `nbinomWaldTest()`function of `DESeq2` to fit a *generalized linear model (GLM)* and compute *log2 fold changes* (synonymous with "GLM coefficients", "beta coefficients" or "effect size") corresponding to the variables of the *design matrix*. 
+The *design matrix* is directly related to the *design formula* and automatically derived from it. Assume a design formula with one variable (`~ treatment`) and two factor levels (treatment and control). 
+The mean expression $\mu_{j}$ of a specific gene in sample $j$ will be modeled as following:
 
 $log(μ_j) = β_0 + x_j β_T$,
 

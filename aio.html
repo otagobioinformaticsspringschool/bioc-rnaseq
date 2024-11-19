@@ -1213,7 +1213,7 @@ have to do to remove those (generally speaking, not exact codes)?</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <ol style="list-style-type: decimal">
 <li>In <code>counts</code>, the rows are genes just like the rows in
@@ -1339,7 +1339,7 @@ codes.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb19">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -1764,7 +1764,7 @@ day 8?</li>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution3" aria-expanded="false" aria-controls="collapseSolution3">
   <h4 class="accordion-header" id="headingSolution3"> Show me the solution </h4>
 </button>
-<div id="collapseSolution3" class="accordion-collapse collapse" data-bs-parent="#accordionSolution3" aria-labelledby="headingSolution3">
+<div id="collapseSolution3" class="accordion-collapse collapse" aria-labelledby="headingSolution3" data-bs-parent="#accordionSolution3">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb48">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -1892,7 +1892,7 @@ codes and then check you correctly got the 21,198 mRNA genes:</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution4" aria-expanded="false" aria-controls="collapseSolution4">
   <h4 class="accordion-header" id="headingSolution4"> Show me the solution </h4>
 </button>
-<div id="collapseSolution4" class="accordion-collapse collapse" data-bs-parent="#accordionSolution4" aria-labelledby="headingSolution4">
+<div id="collapseSolution4" class="accordion-collapse collapse" aria-labelledby="headingSolution4" data-bs-parent="#accordionSolution4">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb57">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -2800,7 +2800,7 @@ work directly on the raw counts.</li>
 </div>
 </section></section><section id="aio-05-differential-expression"><p>Content from <a href="05-differential-expression.html">Differential expression analysis</a></p>
 <hr>
-<p> Last updated on 2024-11-15 |
+<p> Last updated on 2024-11-19 |
 
         <a href="https://github.com/otagobioinformaticsspringschool/bioc-rnaseq/edit/main/episodes/05-differential-expression.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 <div class="text-end">
@@ -2969,6 +2969,18 @@ skewed count distribution.</p>
 <div class="section level3">
 <h3 id="dispersion">Dispersion<a class="anchor" aria-label="anchor" href="#dispersion"></a>
 </h3>
+<p>Dispersion (or dispersion estimates) are a measure of variability in
+gene expression that exceeds what is expected from random sampling. Real
+RNA-seq data often displays a greater degree of gene-level variation
+than is expected (under a Poisson model), which is thought to be due to
+biological and technical factors. Dispersion estimates are an attempt to
+quantify this ‘additional’ variability by comparing the observed
+variance to the mean. By calculating dispersion, we gain useful
+information about the natural variability in our data, which allows us
+to make more accurate statistical inferences. This includes, but is not
+limited to: - Differenting biological from technical sources. - Fitting
+accurate models of gene expression. - Dealing with across-gene
+differences.</p>
 <p>The within-group variance of the counts for a gene following a
 negative binomial distribution with mean <span class="math inline">\(\mu\)</span> can be modeled as:</p>
 <p><span class="math inline">\(var = \mu + \theta \mu^2\)</span></p>
@@ -3015,6 +3027,20 @@ the effect of <em>shrinkage</em> using <code>plotDispEsts()</code>:</p>
 <div class="section level3">
 <h3 id="testing">Testing<a class="anchor" aria-label="anchor" href="#testing"></a>
 </h3>
+<p>We can now perform a test to identify differentially expressed genes
+between the treatment groups.</p>
+<p>This will be done in three steps, with a single function: - Step 1:
+Fit a negative binomial model. - Step 2: Calculate the log fold change
+(logFC) for each gene. Estimate the logFC in expression between samples
+in the different conditions (in our case, Day0 vs Day8). - Step 3:
+Conduct a Wald test to calculate whether the estimated fold change is
+statistically significant. - Then convert the ouput of the Wald test to
+a p value, which is used to accept or reject the null hypothesis of no
+significant difference.</p>
+<p>What is the Wald test? The Wald test is conceptually similar to a
+t-Test, but is specifically suited for use with linear models and
+non-normal data (as we have here, with the negative binomial
+distribution).</p>
 <p>We can use the <code>nbinomWaldTest()</code>function of
 <code>DESeq2</code> to fit a <em>generalized linear model (GLM)</em> and
 compute <em>log2 fold changes</em> (synonymous with “GLM coefficients”,
@@ -3106,7 +3132,7 @@ lesson?</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
 <div class="accordion-body">
 <p>In the lesson example the last variable of the design formula is
 <code>time</code>. The <strong>reference level</strong> (first in
@@ -3210,7 +3236,7 @@ time.</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb22">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -3350,7 +3376,7 @@ results then?</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution3" aria-expanded="false" aria-controls="collapseSolution3">
   <h4 class="accordion-header" id="headingSolution3"> Show me the solution </h4>
 </button>
-<div id="collapseSolution3" class="accordion-collapse collapse" data-bs-parent="#accordionSolution3" aria-labelledby="headingSolution3">
+<div id="collapseSolution3" class="accordion-collapse collapse" aria-labelledby="headingSolution3" data-bs-parent="#accordionSolution3">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb30">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -3856,7 +3882,7 @@ mean expression of a gene between male and female mice?</p>
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution1" aria-expanded="false" aria-controls="collapseSolution1">
   <h4 class="accordion-header" id="headingSolution1"> Show me the solution </h4>
 </button>
-<div id="collapseSolution1" class="accordion-collapse collapse" aria-labelledby="headingSolution1" data-bs-parent="#accordionSolution1">
+<div id="collapseSolution1" class="accordion-collapse collapse" data-bs-parent="#accordionSolution1" aria-labelledby="headingSolution1">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb19">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
@@ -3943,7 +3969,7 @@ Day4, Day8) in the male spinal cord samples, and visualize it using
 <button class="accordion-button solution-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSolution2" aria-expanded="false" aria-controls="collapseSolution2">
   <h4 class="accordion-header" id="headingSolution2"> Show me the solution </h4>
 </button>
-<div id="collapseSolution2" class="accordion-collapse collapse" aria-labelledby="headingSolution2" data-bs-parent="#accordionSolution2">
+<div id="collapseSolution2" class="accordion-collapse collapse" data-bs-parent="#accordionSolution2" aria-labelledby="headingSolution2">
 <div class="accordion-body">
 <div class="codewrapper sourceCode" id="cb25">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>

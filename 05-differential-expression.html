@@ -283,7 +283,7 @@
       </div>
       <hr></nav><main id="main-content" class="main-content"><div class="container lesson-content">
         <h1>Differential expression analysis</h1>
-        <p> Last updated on 2024-11-19 |
+        <p> Last updated on 2024-11-21 |
 
         <a href="https://github.com/otagobioinformaticsspringschool/bioc-rnaseq/edit/main/episodes/05-differential-expression.Rmd" class="external-link">Edit this page <i aria-hidden="true" data-feather="edit"></i></a></p>
 
@@ -498,34 +498,22 @@ the effect of <em>shrinkage</em> using <code>plotDispEsts()</code>:</p>
 <h3 id="testing">Testing<a class="anchor" aria-label="anchor" href="#testing"></a></h3>
 <p>We can now perform a test to identify differentially expressed genes
 between the treatment groups.</p>
-<p>This will be done in three steps, with a single function: - Step 1:
-Fit a negative binomial model. - Step 2: Calculate the log fold change
-(logFC) for each gene. Estimate the logFC in expression between samples
-in the different conditions (in our case, Day0 vs Day8). - Step 3:
-Conduct a Wald test to calculate whether the estimated fold change is
-statistically significant. - Then convert the ouput of the Wald test to
-a p value, which is used to accept or reject the null hypothesis of no
-significant difference.</p>
-<p>What is the Wald test? The Wald test is conceptually similar to a
+<p>This will be done in three steps, with a single function:</p>
+<ul><li><p>Step 1: Fit a negative binomial model.</p></li>
+<li><p>Step 2: Calculate the log fold change (logFC) for each gene.
+Estimate the logFC in expression between samples in the different
+conditions (in our case, Day0 vs Day8).</p></li>
+<li>
+<p>Step 3: Conduct a Wald test to calculate whether the estimated
+fold change is statistically significant.</p>
+<ul><li>Then convert the ouput of the Wald test to a p value, which is used
+to accept or reject the null hypothesis of no significant
+difference.</li>
+</ul></li>
+</ul><p>What is the Wald test? The Wald test is conceptually similar to a
 t-Test, but is specifically suited for use with linear models and
 non-normal data (as we have here, with the negative binomial
 distribution).</p>
-<p>We can use the <code>nbinomWaldTest()</code>function of
-<code>DESeq2</code> to fit a <em>generalized linear model (GLM)</em> and
-compute <em>log2 fold changes</em> (synonymous with “GLM coefficients”,
-“beta coefficients” or “effect size”) corresponding to the variables of
-the <em>design matrix</em>. The <em>design matrix</em> is directly
-related to the <em>design formula</em> and automatically derived from
-it. Assume a design formula with one variable (<code>~ treatment</code>)
-and two factor levels (treatment and control). The mean expression <span class="math inline">\(\mu_{j}\)</span> of a specific gene in sample
-<span class="math inline">\(j\)</span> will be modeled as following:</p>
-<p><span class="math inline">\(log(μ_j) = β_0 + x_j β_T\)</span>,</p>
-<p>with <span class="math inline">\(β_T\)</span> corresponding to the
-log2 fold change of the treatment groups, <span class="math inline">\(x_j\)</span> = 1, if <span class="math inline">\(j\)</span> belongs to the treatment group and
-<span class="math inline">\(x_j\)</span> = 0, if <span class="math inline">\(j\)</span> belongs to the control group.</p>
-<p>Finally, the estimated log2 fold changes are scaled by their standard
-error and tested for being significantly different from 0 using the
-<em>Wald test</em>.</p>
 <div class="codewrapper sourceCode" id="cb12">
 <h3 class="code-label">R<i aria-hidden="true" data-feather="chevron-left"></i><i aria-hidden="true" data-feather="chevron-right"></i>
 </h3>
@@ -899,9 +887,9 @@ experiment-wide false positive rate.</p>
 can still be hard to interpret with regards to an experimental question.
 Visualizing gene expression can help to detect expression pattern or
 group of genes with related functions. We will perform systematic
-detection of over represented groups of genes in a <a href="07-gene-set-analysis.html">later section</a>. Before this
-visualization can already help us to get a good intuition about what to
-expect.</p>
+detection of over represented groups of genes in a <a href="07-gene-set-analysis.html">later section</a>. Before we perform
+the full enrichment analysis, visualization can already help us to get a
+good intuition about what to expect.</p>
 <p>We will use transformed data (see <a href="04-exploratory-qc.html">exploratory data analysis</a>) and the top
 differentially expressed genes for visualization. A heatmap can reveal
 expression pattern across sample groups (columns) and automatically
@@ -1030,8 +1018,8 @@ beneficial.</li>
   "url": "https://otagobioinformaticsspringschool.github.io/bioc-rnaseq/05-differential-expression.html",
   "identifier": "https://otagobioinformaticsspringschool.github.io/bioc-rnaseq/05-differential-expression.html",
   "dateCreated": "2020-09-15",
-  "dateModified": "2024-11-19",
-  "datePublished": "2024-11-19"
+  "dateModified": "2024-11-21",
+  "datePublished": "2024-11-21"
 }
 
   </script><script>

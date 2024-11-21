@@ -1014,7 +1014,7 @@ resTimeGO = enrichGO(gene = timeDEgenes,
 ```
 
 ``` output
---> Expected input gene ID: 238217,381404,75437,20655,116837,317755
+--> Expected input gene ID: 75216,100049545,77595,723965,51869,18811
 ```
 
 ``` output
@@ -1296,25 +1296,13 @@ ggplot(resTimeGOTable[1:10, ],
 
 <img src="fig/07-gene-set-analysis-rendered-plot-enrichment-1.png" style="display: block; margin: auto;" />
 
-In the next example, we use _z_-score as the primary variable to map to the
-offset to origin, `DE_Ratio` and `Count` to map to dot colors and sizes.
 
 
-``` r
-ggplot(resTimeGOTable[1:10, ], 
-        aes(x = zScore, y = factor(Description, levels = rev(Description)), 
-            col = DE_Ratio, size = Count)) +
-    geom_point() +
-    ylab("")
-```
-
-<img src="fig/07-gene-set-analysis-rendered-plot-z-1.png" style="display: block; margin: auto;" />
-
-Both plots can highlight the gene set "leukocyte migration involved in
+The new plot can highlight the gene set "leukocyte migration involved in
 inflammatory response" is relatively small but highly enriched.
 
-Another useful visualization is the volcano plot. You may be aware of in
-differential expression analysis, in the volcano plot, x-axis corresponds to
+Another useful visualization is the volcano plot. You may be aware of volcano plots in
+differential expression analysis. In that context the volcano plot x-axis corresponds to
 log2 fold changes of the differential expression, and y-axis corresponds to
 the adjusted _p_-values. It is actually similar here where we use log2 fold
 enrichment on x-axis.

@@ -881,7 +881,7 @@ n = 28943  # length(resTimeGO@universe)
 
 Instead of using `GeneRatio`, we use the fraction of DE genes in the gene sets
 which are kind of like a "scaled" value for all gene sets. Let's calculate it:
-
+ 
 ```{r get-ratio}
 resTimeGOTable$DE_Ratio = n_11/n_01
 resTimeGOTable$GS_size = n_01  # size of gene sets

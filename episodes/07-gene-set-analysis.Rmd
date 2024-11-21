@@ -879,7 +879,7 @@ n_01 = as.numeric(gsub("/.*$", "", resTimeGOTable$BgRatio))
 n = 28943  # length(resTimeGO@universe)
 ```
 
-Instead of using `GeneRatio`, we use the fraction of DE genes in the gene sets
+Instead of using GeneRatio, we use the fraction of DE genes in the gene sets
 which are kind of like a "scaled" value for all gene sets. Let's calculate it:
  
 ```{r get-ratio}

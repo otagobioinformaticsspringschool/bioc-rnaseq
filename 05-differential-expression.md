@@ -170,23 +170,17 @@ plotDispEsts(dds)
 We can now perform a test to identify differentially expressed genes between the treatment groups.
 
 This will be done in three steps, with a single function:
+
 - Step 1: Fit a negative binomial model. 
+
 - Step 2: Calculate the log fold change (logFC) for each gene. Estimate the logFC in expression between samples in the different conditions (in our case, Day0 vs Day8).
+
 - Step 3: Conduct a Wald test to calculate whether the estimated fold change is statistically significant.
     - Then convert the ouput of the Wald test to a p value, which is used to accept or reject the null hypothesis of no significant difference.
 
 What is the Wald test? The Wald test is conceptually similar to a t-Test, but is specifically suited for use with linear models and non-normal data (as we have here, with the negative binomial distribution).
 
 
-We can use the `nbinomWaldTest()`function of `DESeq2` to fit a *generalized linear model (GLM)* and compute *log2 fold changes* (synonymous with "GLM coefficients", "beta coefficients" or "effect size") corresponding to the variables of the *design matrix*. 
-The *design matrix* is directly related to the *design formula* and automatically derived from it. Assume a design formula with one variable (`~ treatment`) and two factor levels (treatment and control). 
-The mean expression $\mu_{j}$ of a specific gene in sample $j$ will be modeled as following:
-
-$log(μ_j) = β_0 + x_j β_T$,
-
- with $β_T$ corresponding to the log2 fold change of the treatment groups, $x_j$ = 1, if $j$ belongs to the treatment group and $x_j$ = 0, if $j$ belongs to the control group. 
-
-Finally, the estimated log2 fold changes are scaled by their standard error and tested for being significantly different from 0 using the *Wald test*. 
 
 
 
@@ -467,7 +461,7 @@ Genes with very low counts are not likely to see significant differences typical
 
 ## Visualize selected set of genes
 
-The amount of DE genes can be overwhelming and a ranked list of genes can still be hard to interpret with regards to an experimental question. Visualizing gene expression can help to detect expression pattern or group of genes with related functions. We will perform systematic detection of over represented groups of genes in a [later section](../episodes/07-gene-set-analysis.Rmd). Before this visualization can already help us to get a good intuition about what to expect.
+The amount of DE genes can be overwhelming and a ranked list of genes can still be hard to interpret with regards to an experimental question. Visualizing gene expression can help to detect expression pattern or group of genes with related functions. We will perform systematic detection of over represented groups of genes in a [later section](../episodes/07-gene-set-analysis.Rmd). Before we perform the full enrichment analysis, visualization can already help us to get a good intuition about what to expect.
 
 We will use transformed data (see [exploratory data analysis](../episodes/04-exploratory-qc.Rmd)) and the top differentially expressed genes for visualization. A heatmap can reveal expression pattern across sample groups (columns) and automatically orders genes (rows) according to their similarity. 
 

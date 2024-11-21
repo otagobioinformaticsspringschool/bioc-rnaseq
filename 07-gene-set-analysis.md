@@ -89,14 +89,8 @@ library(simplifyEnrichment)
 ## The statistical method
 
 To demonstrate the ORA analysis, we use a list of DE genes from a comparison
-between genders. The following code performs **DESeq2** analysis which you
-should have already learnt in the previous episode. In the end, we have a list
+between genders. In the end, we have a list
 of DE genes filtered by FDR < 0.05, and save it in the object `sexDEgenes`.
-
-The file `data/GSE96870_se.rds` contains a `RangedSummarizedExperiment` that contains RNA-Seq counts that were downloaded in [Episode 2](../episodes/02-setup.Rmd) and constructed in [Episode 3](../episodes/03-import-annotate.Rmd) (minimal codes for downloading and constructing in the script
-[`download_data.R`](https://github.com/carpentries-incubator/bioc-rnaseq/blob/main/episodes/download_data.R).
-In the following code, there are also comments that explain every step of the
-analysis.
 
 
 ``` r
@@ -213,47 +207,34 @@ go to the next section.
 ### Fisher's exact test
 
 To statistically measure the enrichment, the relationship of DE genes and the
-gene set is normally formatted into the following 2x2 contingency table, where
-in the table are the numbers of genes in different categories. $n_{+1}$ is the
-size of the _XY gene set_ (i.e. the number of member genes), $n_{1+}$ is the
-number of DE genes, $n$ is the number of total genes.
+gene set is normally formatted into the following 2x2 contingency table.
+We can use a 2 x 2 table, where the four data points are (from top left to bottom right): 
+
+- the number of genes that are both in the category and are differentially expressed.
+
+- the number of differentially expressed genes not in the category.
+
+- the number of category genes that are not differentially expressed.
+
+- the number of genes that are neither in the category nor differentially expressed.
 
 <center>
 |            | In the gene set | Not in the gene set | Total
 | ---------- | --------------- | --------------------| -------
-|  **DE**    |     $n_{11}$    |    $n_{12}$         | $n_{1+}$
-| **Not DE** |     $n_{21}$    |    $n_{22}$         | $n_{2+}$
-| **Total**  |     $n_{+1}$    |    $n_{+2}$         | $n$
+|  **DE**    |     $13$    |    $41$         | $54$
+| **Not DE** |     $1121$    |    $20023$         | $21144$
+| **Total**  |     $1134$    |    $20064$         | $21198$
 </center>
 
-These numbers can be obtained as in the following code^[Genes must be unique in each vector.]. Note we replace `+` with `0` in the
-R variable names.
 
-
-``` r
-n    <- nrow(se)
-n_01 <- length(XYGeneSet)
-n_10 <- length(sexDEgenes)
-n_11 <- length(intersect(sexDEgenes, XYGeneSet))
-```
-
-Other values can be obtained by:
-
-
-``` r
-n_12 <- n_10 - n_11
-n_21 <- n_01 - n_11
-n_20 <- n    - n_10
-n_02 <- n    - n_01
-n_22 <- n_02 - n_12
-```
 
 All the values are:
 
 
 ``` r
-matrix(c(n_11, n_12, n_10, n_21, n_22, n_20, n_01, n_02, n),
-    nrow = 3, byrow = TRUE)
+hypergeoDistMatrix <- matrix(c(13,1121,1134,41,20023,20064,54, 21144, 21198),3,3)
+
+hypergeoDistMatrix
 ```
 
 ``` output
@@ -263,17 +244,6 @@ matrix(c(n_11, n_12, n_10, n_21, n_22, n_20, n_01, n_02, n),
 [3,] 1134 20064 21198
 ```
 
-And we fill these numbers into the 2x2 contingency table:
-
-
-<center>
-|            | In the gene set | Not in the gene set | Total
-| ---------- | --------------- | --------------------| -------
-|  **DE**    |     13    |    41         | 54
-| **Not DE** |     1121    |    20023         | 21144
-| **Total**  |     1134    |    20064         | 21198
-</center>
-
 
 Fisher's exact test can be used to test the associations of the two marginal
 attributes, i.e. is there a dependency of a gene to be a DE gene and to be in
@@ -281,73 +251,6 @@ the _XY gene set_? In R, we can use the function `fisher.test()` to perform
 the test. The input is the top-left 2x2 sub-matrix. We specify `alternative =
 "greater"` in the function because we are only interested in
 over-representation.
-
-
-``` r
-fisher.test(matrix(c(n_11, n_12, n_21, n_22), nrow = 2, byrow = TRUE),
-    alternative = "greater")
-```
-
-``` output
-
-	Fisher's Exact Test for Count Data
-
-data:  matrix(c(n_11, n_12, n_21, n_22), nrow = 2, byrow = TRUE)
-p-value = 3.906e-06
-alternative hypothesis: true odds ratio is greater than 1
-95 percent confidence interval:
- 3.110607      Inf
-sample estimates:
-odds ratio 
-  5.662486 
-```
-
-In the output, we can see the _p_-value is very small (`3.906e-06`), then we
-can conclude DE genes have a very strong enrichment in the _XY gene set_.
-
-Results of the Fisher's Exact test can be saved into an object `t`, which is a
-simple list, and the _p_-value can be obtained by `t$p.value`.
-
-
-``` r
-t <- fisher.test(matrix(c(n_11, n_12, n_21, n_22), nrow = 2, byrow = TRUE),
-    alternative = "greater")
-t$p.value
-```
-
-``` output
-[1] 3.9059e-06
-```
-
-Odds ratio from the Fisher's exact test is defined as follows:
-
-$$ 
-\mathrm{Odds\_ratio} = \frac{n_{11}/n_{21}}{n_{12}/n_{22}} = \frac{n_{11}/n_{12}}{n_{21}/n_{22}} = \frac{n_{11} * n_{22}}{n_{12} * n_{21}}
-$$
-
-If there is no association between DE genes and the gene set, odds ratio is
-expected to be 1. And it is larger than 1 if there is an over-representation
-of DE genes on the gene set.
-
-
-:::::::::::::::::::::::::::::::::::::::::  callout
-
-### Further reading
-
-The 2x2 contingency table can be transposed and it does not affect the Fisher's
-exact test. E.g. let's put whether genes are in the gene sets on rows,
-and put whether genes are DE on columns.
-
-<center>
-
-|                         |    DE       | Not DE    | Total
-| ----------------------- | ----------- | ----------| -------
-| **In the gene set**     |  13   |  1121 | 1134
-| **Not in the gene set** |  41   |  20023 | 20064
-| **Total**               |  54   |  21144 | 21198
-</center>
-
-And the corresponding `fisher.test()` is:
 
 
 ``` r
@@ -369,147 +272,26 @@ odds ratio
   5.662486 
 ```
 
-::::::::::::::::::::::::::::::::::::::::::::::::::
+In the output, we can see the _p_-value is very small (`3.906e-06`), then we
+can conclude DE genes have a very strong enrichment in the _XY gene set_.
 
-### The hypergeometric distribution
-
-We can look at the problem from another aspect. This time we treat all genes
-as balls in a big box where all the genes have the same probability to be
-picked up. Some genes are marked as DE genes (in red in the figure) and other
-genes are marked as non-DE genes (in blue). We grab $n_{+1}$ genes (the size
-of the gene set) from the box and we want to ask **what is the probability of
-having $n_{11}$ DE genes in our hand?**
-
-<img src="fig/07-gene-set-analysis-rendered-hypergeom-1.png" width="80%" style="display: block; margin: auto;" />
-
-We first calculate the total number of ways of picking $n_{+1}$ genes from
-total $n$ genes, without distinguishing whether they are DE or not:
-$\binom{n}{n_{+1}}$.
-
-Next, in the $n_{+1}$ genes that have been picked, there are $n_{11}$ DE genes
-which can only be from the total $n_{1+}$ DE genes. Then the number of ways of
-picking $n_{11}$ DE genes from $n_{1+}$ total DE genes is
-$\binom{n_{1+}}{n_{11}}$.
-
-Similarly, there are still $n_{21}$ non-DE genes in our hand, which can only be
-from the total $n_{2+}$ non-DE genes. Then the number of ways of picking
-$n_{21}$ non-DE genes from $n_{2+}$ total non-DE genes:
-$\binom{n_{2+}}{n_{21}}$.
-
-Since picking DE genes and picking non-DE genes are independent, the number of
-ways of picking $n_{+1}$ genes which contain $n_{11}$ DE genes and $n_{21}$
-non-DE genes is their multiplication: $\binom{n_{1+}}{n_{11}} \binom{n_{2+}}{n_{21}}$.
-
-And the probability $P$ is:
-
-$$P = \frac{\binom{n_{1+}}{n_{11}} \binom{n_{2+}}{n_{21}}}{\binom{n}{n_{+1}}} =  \frac{\binom{n_{1+}}{n_{11}} \binom{n - n_{1+}}{n_{+1} -n_{11}}}{\binom{n}{n_{+1}}} $$
-
-where in the denominator is the number of ways of picking $n_{+1}$ genes
-without distinguishing whether they are DE or not.
-
-
-If $n$ (number of total genes), $n_{1+}$ (number of DE genes) and $n_{+1}$
-(size of gene set) are all fixed values, the number of DE genes that are
-picked can be denoted as a random variable $X$. Then $X$ follows the
-hypergeometric distribution with parameters $n$, $n_{1+}$ and $n_{+1}$,
-written as:
-
-$$ X \sim \mathrm{Hyper}(n, n_{1+}, n_{+1})$$
-
-The _p_-value of the enrichment is calculated as the probability of having an
-observation equal to or larger than $n_{11}$ under the assumption of independence:
-
-$$
-\mathrm{Pr}( X \geqslant  n_{11} ) = \sum_{x \in \{ {n_{11}, n_{11}+1, ..., \min\{n_{1+}, n_{+1}\} \}}} \mathrm{Pr}(X = x)
-$$
-
-In R, the function `phyper()` calculates _p_-values from the hypergeometric
-distribution. There are four arguments:
-
-```r
-phyper(q, m, n, k)
-```
-
-which are:
-
-- `q`: the observation,
-- `m`: number of DE genes,
-- `n`: number of non-DE genes,
-- `k`: size of the gene set.
-
-`phyper()` calculates $\mathrm{Pr}(X \leqslant q)$. To calculate
-$\mathrm{Pr}(X \geqslant q)$, we need to transform it a little bit:
-
-$$ \mathrm{Pr}(X \geqslant q) = 1 - \mathrm{Pr}(X < q) = 1 - \mathrm{Pr}(X \leqslant q-1)$$
-
-Then, the correct use of `phyper()` is:
-
-```r
-1 - phyper(q - 1, m, n, k)
-```
-
-Let's plugin our variables:
+Results of the Fisher's Exact test can be saved into an object `t`, which is a
+simple list, and the _p_-value can be obtained by `t$p.value`.
 
 
 ``` r
-1 - phyper(n_11 - 1, n_10, n_20, n_01)
+t <- fisher.test(matrix(c(13, 1121, 41, 20023), nrow = 2, byrow = TRUE),
+    alternative = "greater")
+t$p.value
 ```
 
 ``` output
 [1] 3.9059e-06
 ```
 
-Optionally, `lower.tail` argument can be specified which directly calculates
-_p_-values from the upper tail of the distribution.
-
-
-``` r
-phyper(n_11 - 1, n_10, n_20, n_01, lower.tail = FALSE)
-```
-
-``` output
-[1] 3.9059e-06
-```
-
-If we switch `n_01` and `n_10`, the _p_-values are identical:
-
-
-``` r
-1 - phyper(n_11 - 1, n_01, n_02, n_10)
-```
-
-``` output
-[1] 3.9059e-06
-```
-
-`fisher.test()` and `phyper()` give the same _p_-value. Actually the two methods are identical
-because in Fisher's exact test, hypergeometric distribution is the exact distribution of its statistic.
-
-Let's test the runtime of the two functions:
-
-
-
-``` r
-library(microbenchmark)
-microbenchmark(
-    fisher = fisher.test(matrix(c(n_11, n_12, n_21, n_22), nrow = 2, byrow = TRUE),
-        alternative = "greater"),
-    hyper = 1 - phyper(n_11 - 1, n_10, n_20, n_01)
-)
-```
-
-``` output
-Unit: microseconds
-   expr     min      lq      mean  median      uq     max neval
- fisher 240.318 244.406 255.15359 247.190 252.651 550.086   100
-  hyper   1.463   1.663   2.45419   2.404   2.780  18.234   100
-```
-
-It is very astonishing that `phyper()` is hundreds of times faster than
-`fisher.test()`. Main reason is in `fisher.test()`, there are many additional
-calculations besides calculating the _p_-value. So if you want to implement ORA
-analysis by yourself, always consider to use `phyper()`^[Also note `phyper()` can be vectorized.].
-
+If there is no association between DE genes and the gene set, odds ratio is
+expected to be 1. And it is larger than 1 if there is an over-representation
+of DE genes on the gene set.
 
 :::::::::::::::::::::::::::::::::::::::::  callout
 
@@ -1174,10 +956,12 @@ sets, the majority of the gene sets will have few or even no gene overlapped.
 In this example we use the list of DE genes from the comparison between
 different time points.
 
-Another thing worth to mention is, in the following code where we filter DE
-genes, we additionally add a filtering on the log2 fold change. This is
-recommended when the number of DE genes is too large. The filtering on log2
-fold change can be thought as a filtering from the biology aspect.
+It is worth mentioning that in the following code where we filter DE
+genes, we add a filtering on the log2 fold change. This is a commonly applied filter
+and can be thought of as checking that results are biologically significant as well 
+as being statistically significant (afterall, if someone told me that cutting coffee from my diet
+would add an extra *eight minutes* to my lifespan, even if they were statistically confident
+that this is true, I wouldn't care from a biological perspective. I'd rather have the coffee.)
 
 
 ``` r
@@ -1230,7 +1014,7 @@ resTimeGO = enrichGO(gene = timeDEgenes,
 ```
 
 ``` output
---> Expected input gene ID: 17427,23967,20535,331046,54137,53422
+--> Expected input gene ID: 238217,381404,75437,20655,116837,317755
 ```
 
 ``` output
@@ -1387,394 +1171,6 @@ GO:0060326    41
 ```
 
 
-:::::::::::::::::::::::::::::::::::::::::  callout
-
-## Perform GO enrichment on other organisms
-
-Gene sets are provided as an `OrgDb` object in `enrichGO()`, thus you can
-perform ORA analysis on any organism as long as there is a corresponding
-`OrgDb` object.
-
-- For model organisms, the `OrgDb` object can be obtained from the corresponding **org.\*.db** package.
-- For other organisms, the `OrgDb` object can be found with the **AnnotationHub** package.
-
-::::::::::::::::::::::::::::::::::::::::::::::::::
-
-
-
-### KEGG pathway enrichment
-
-To perform KEGG pathway enrichment analysis, there is also a function
-`enrichKEGG()` for that. Unfortunately, it cannot perform gene ID conversion
-automatically. Thus, if the ID type is not Entrez ID, we have to convert it by
-hand.
-
-Note if you have also set `universe`, it should be converted to Entrez IDs as
-well.
-
-We use the `mapIds()` function to convert genes from symbols to Entrez IDs.
-Since the ID mapping is not always one-to-one. We only take the first one if
-there are multiple hits by setting `multiVals = "first"`(but of course you can
-choose other options for `multiVals`, check the documentation). We also remove
-genes with no mapping available (with `NA` after the mapping)^[You can also
-use `select()` function: `select(org.Mm.eg.db, keys = timeDEgenes, keytype =
-"SYMBOL", column = "ENTREZID")`].
-
-
-``` r
-EntrezIDs = mapIds(org.Mm.eg.db, keys = timeDEgenes, 
-                   keytype = "SYMBOL", column = "ENTREZID", multiVals = "first")
-```
-
-``` output
-'select()' returned 1:1 mapping between keys and columns
-```
-
-``` r
-EntrezIDs = EntrezIDs[!is.na(EntrezIDs)]
-head(EntrezIDs)
-```
-
-``` output
-    Sgk3    Kcnb2   Sbspon    Gsta3   Lman2l  Ankrd39 
-"170755"  "98741" "226866"  "14859" "214895" "109346" 
-```
-
-We have to set the KEGG organism code if it is not human. Similarly it is suggested
-to set `pvalueCutoff` and `qvalueCutoff` both to 1 and convert the result to a
-data frame.
-
-
-
-``` r
-resTimeKEGG = enrichKEGG(gene = EntrezIDs, 
-                         organism = "mmu",
-                         pvalueCutoff = 1,
-                         qvalueCutoff = 1)
-resTimeKEGGTable = as.data.frame(resTimeKEGG)
-head(resTimeKEGGTable)
-```
-
-``` output
-                                     category
-mmu00590                           Metabolism
-mmu00591                           Metabolism
-mmu00565                           Metabolism
-mmu00592                           Metabolism
-mmu04913                   Organismal Systems
-mmu04061 Environmental Information Processing
-                                 subcategory       ID
-mmu00590                    Lipid metabolism mmu00590
-mmu00591                    Lipid metabolism mmu00591
-mmu00565                    Lipid metabolism mmu00565
-mmu00592                    Lipid metabolism mmu00592
-mmu04913                    Endocrine system mmu04913
-mmu04061 Signaling molecules and interaction mmu04061
-                                                                                        Description
-mmu00590                                   Arachidonic acid metabolism - Mus musculus (house mouse)
-mmu00591                                      Linoleic acid metabolism - Mus musculus (house mouse)
-mmu00565                                        Ether lipid metabolism - Mus musculus (house mouse)
-mmu00592                               alpha-Linolenic acid metabolism - Mus musculus (house mouse)
-mmu04913                                       Ovarian steroidogenesis - Mus musculus (house mouse)
-mmu04061 Viral protein interaction with cytokine and cytokine receptor - Mus musculus (house mouse)
-         GeneRatio BgRatio RichFactor FoldEnrichment   zScore       pvalue
-mmu00590    16/460 89/9793  0.1797753       3.827259 5.948251 3.207060e-06
-mmu00591    12/460 55/9793  0.2181818       4.644901 6.017779 6.933577e-06
-mmu00565    11/460 48/9793  0.2291667       4.878759 5.980348 1.015443e-05
-mmu00592     8/460 25/9793  0.3200000       6.812522 6.460048 1.188715e-05
-mmu04913    12/460 64/9793  0.1875000       3.991712 5.330644 3.532032e-05
-mmu04061    14/460 95/9793  0.1473684       3.137346 4.647286 1.293380e-04
-             p.adjust       qvalue
-mmu00590 0.0009242256 0.0008008183
-mmu00591 0.0009242256 0.0008008183
-mmu00565 0.0009242256 0.0008008183
-mmu00592 0.0009242256 0.0008008183
-mmu04913 0.0021969238 0.0019035793
-mmu04061 0.0067040202 0.0058088650
-                                                                                                       geneID
-mmu00590 18783/19215/211429/329502/78390/19223/67103/242546/13118/18781/18784/11689/232889/15446/237625/11687
-mmu00591                        18783/211429/329502/78390/242546/18781/18784/13113/622127/232889/237625/11687
-mmu00565                               18783/211429/329502/78390/22239/18781/18784/232889/320981/237625/53897
-mmu00592                                                  18783/211429/329502/78390/18781/18784/232889/237625
-mmu04913                          18783/211429/329502/78390/242546/11689/232889/13076/13070/15485/13078/16867
-mmu04061                  16174/20311/57349/56744/14825/20295/20296/20306/20304/20305/12775/56838/16185/16186
-         Count
-mmu00590    16
-mmu00591    12
-mmu00565    11
-mmu00592     8
-mmu04913    12
-mmu04061    14
-```
-
-
-:::::::::::::::::::::::::::::::::::::::::  callout
-
-## Perform KEGG pathway enrichment on other organisms
-
-Extending ORA to other organisms is rather simple.
-
-1. Make sure the DE genes are Entrez IDs.
-2. Choose the corresponding KEGG organism code.
-
-::::::::::::::::::::::::::::::::::::::::::::::::::
-
-
-### MSigDB enrichment
-
-For MSigDB gene sets, there is no pre-defined enrichment function. We need to
-directly use the low-level enrichment function `enricher()` which accepts
-self-defined gene sets. The gene sets should be in a format of a two-column
-data frame of genes and gene sets (or a class that can be converted to a data
-frame).
-
-
-``` r
-library(msigdbr)
-gene_sets = msigdbr(category = "H", species = "mouse")
-head(gene_sets)
-```
-
-``` output
-# A tibble: 6 × 18
-  gs_cat gs_subcat gs_name               gene_symbol entrez_gene ensembl_gene   
-  <chr>  <chr>     <chr>                 <chr>             <int> <chr>          
-1 H      ""        HALLMARK_ADIPOGENESIS Abca1             11303 ENSMUSG0000001…
-2 H      ""        HALLMARK_ADIPOGENESIS Abcb8             74610 ENSMUSG0000002…
-3 H      ""        HALLMARK_ADIPOGENESIS Acaa2             52538 ENSMUSG0000003…
-4 H      ""        HALLMARK_ADIPOGENESIS Acadl             11363 ENSMUSG0000002…
-5 H      ""        HALLMARK_ADIPOGENESIS Acadm             11364 ENSMUSG0000006…
-6 H      ""        HALLMARK_ADIPOGENESIS Acads             11409 ENSMUSG0000002…
-# ℹ 12 more variables: human_gene_symbol <chr>, human_entrez_gene <int>,
-#   human_ensembl_gene <chr>, gs_id <chr>, gs_pmid <chr>, gs_geoid <chr>,
-#   gs_exact_source <chr>, gs_url <chr>, gs_description <chr>, taxon_id <int>,
-#   ortholog_sources <chr>, num_ortholog_sources <dbl>
-```
-
-As mentioned before, it is important the gene ID type in the gene sets should
-be the same as in the DE genes, so here we choose the `"gene_symbol"` column.
-
-
-``` r
-resTimeHallmark = enricher(gene = timeDEgenes, 
-                           TERM2GENE = gene_sets[, c("gs_name", "gene_symbol")],
-                           pvalueCutoff = 1,
-                           qvalueCutoff = 1)
-resTimeHallmarkTable = as.data.frame(resTimeHallmark)
-head(resTimeHallmarkTable)
-```
-
-``` output
-                                                             ID
-HALLMARK_MYOGENESIS                         HALLMARK_MYOGENESIS
-HALLMARK_COMPLEMENT                         HALLMARK_COMPLEMENT
-HALLMARK_COAGULATION                       HALLMARK_COAGULATION
-HALLMARK_ALLOGRAFT_REJECTION       HALLMARK_ALLOGRAFT_REJECTION
-HALLMARK_ESTROGEN_RESPONSE_LATE HALLMARK_ESTROGEN_RESPONSE_LATE
-HALLMARK_INFLAMMATORY_RESPONSE   HALLMARK_INFLAMMATORY_RESPONSE
-                                                    Description GeneRatio
-HALLMARK_MYOGENESIS                         HALLMARK_MYOGENESIS    31/291
-HALLMARK_COMPLEMENT                         HALLMARK_COMPLEMENT    26/291
-HALLMARK_COAGULATION                       HALLMARK_COAGULATION    20/291
-HALLMARK_ALLOGRAFT_REJECTION       HALLMARK_ALLOGRAFT_REJECTION    23/291
-HALLMARK_ESTROGEN_RESPONSE_LATE HALLMARK_ESTROGEN_RESPONSE_LATE    23/291
-HALLMARK_INFLAMMATORY_RESPONSE   HALLMARK_INFLAMMATORY_RESPONSE    22/291
-                                 BgRatio RichFactor FoldEnrichment   zScore
-HALLMARK_MYOGENESIS             201/4394  0.1542289       2.328803 5.135378
-HALLMARK_COMPLEMENT             196/4394  0.1326531       2.003016 3.825523
-HALLMARK_COAGULATION            139/4394  0.1438849       2.172612 3.741006
-HALLMARK_ALLOGRAFT_REJECTION    201/4394  0.1144279       1.727821 2.812786
-HALLMARK_ESTROGEN_RESPONSE_LATE 206/4394  0.1116505       1.685884 2.685080
-HALLMARK_INFLAMMATORY_RESPONSE  201/4394  0.1094527       1.652699 2.522462
-                                      pvalue     p.adjust       qvalue
-HALLMARK_MYOGENESIS             5.710171e-06 0.0002740882 0.0002284068
-HALLMARK_COMPLEMENT             4.300844e-04 0.0103220246 0.0086016872
-HALLMARK_COAGULATION            7.088433e-04 0.0113414921 0.0094512434
-HALLMARK_ALLOGRAFT_REJECTION    6.397659e-03 0.0767719033 0.0639765861
-HALLMARK_ESTROGEN_RESPONSE_LATE 8.584183e-03 0.0824081536 0.0686734614
-HALLMARK_INFLAMMATORY_RESPONSE  1.256794e-02 0.0960740794 0.0800617329
-                                                                                                                                                                                                                geneID
-HALLMARK_MYOGENESIS             Myl1/Casq1/Aplnr/Tnnc2/Ptgis/Gja5/Col15a1/Cav3/Tnnt1/Ryr1/Cox6a2/Tnni2/Lsp1/Nqo1/Hspb2/Cryab/Erbb3/Stc2/Gpx3/Sparc/Myh3/Myh1/Col1a1/Cacng1/Itgb4/Bdkrb2/Mapk12/Apod/Spdef/Cdkn1a/Actn3
-HALLMARK_COMPLEMENT                                                Serpinb2/Pla2g4a/Cd46/Hspa5/Cp/Gnb4/S100a9/Cda/Cxcl1/Apoc1/Itgam/Irf7/Klkb1/Mmp15/Mmp8/Ccl5/Lgals3/Gzmb/Tmprss6/Maff/Plg/Psmb9/Hspa1a/C3/Dusp5/Phex
-HALLMARK_COAGULATION                                                                                         Serpinb2/Ctse/C8g/Ctsk/Masp2/Pf4/Sh2b2/Vwf/Apoc1/Klkb1/Mmp15/Mmp8/Trf/Sparc/Itgb3/Dct/Tmprss6/Maff/Plg/C3
-HALLMARK_ALLOGRAFT_REJECTION                                                           Il18rap/Cd247/Il12a/Pf4/Capg/Ccnd2/Igsf6/Irf7/Il12rb1/Icosl/Itk/Nos2/Ccl2/Ccl7/Ccl5/Gpr65/Gzmb/Il2rb/Tap1/Tap2/H2-T23/Cfp/Il2rg
-HALLMARK_ESTROGEN_RESPONSE_LATE                                                    Clic3/Ass1/Mdk/S100a9/Cdc20/Nbl1/Cav1/Idh2/Th/Pdlim3/Ascl1/Xbp1/Top2a/Dcxr/Fos/Serpina3n/Dhrs2/Tst/Emp2/Fkbp5/Mapk13/Cyp4f15/Kif20a
-HALLMARK_INFLAMMATORY_RESPONSE                                                              Il18rap/Sell/Aplnr/Abca1/Lpar1/Cxcl5/Adm/Irf7/Msr1/Bst2/Ccl17/Icosl/Ccl2/Ccl7/Ccl5/Ccr7/Itgb3/Has2/Il2rb/Cdkn1a/Cd70/Best1
-                                Count
-HALLMARK_MYOGENESIS                31
-HALLMARK_COMPLEMENT                26
-HALLMARK_COAGULATION               20
-HALLMARK_ALLOGRAFT_REJECTION       23
-HALLMARK_ESTROGEN_RESPONSE_LATE    23
-HALLMARK_INFLAMMATORY_RESPONSE     22
-```
-
-
-:::::::::::::::::::::::::::::::::::::::::  callout
-
-### Further reading
-
-Implementing ORA is rather simple. The following function `ora()` performs ORA
-on a list of gene sets. Try to read and understand the code.
-
-
-``` r
-ora = function(genes, gene_sets, universe = NULL) {
-    if(is.null(universe)) {
-        universe = unique(unlist(gene_sets))
-    } else {
-        universe = unique(universe)
-    }
-
-    # make sure genes are unique
-    genes = intersect(genes, universe)
-    gene_sets = lapply(gene_sets, intersect, universe)
-
-    # calculate different numbers
-    n_11 = sapply(gene_sets, function(x) length(intersect(genes, x)))
-    n_10 = length(genes)
-    n_01 = sapply(gene_sets, length)
-    n = length(universe)
-
-    # calculate p-values
-    p = 1 - phyper(n_11 - 1, n_10, n - n_10, n_01)
-
-    df = data.frame(
-        gene_set = names(gene_sets),
-        hits = n_11,
-        n_genes = n_10,
-        gene_set_size = n_01,
-        n_total = n,
-        p_value = p,
-        p_adjust = p.adjust(p, "BH")
-    )
-}
-```
-
-Test on the MSigDB hallmark gene sets:
-
-
-``` r
-HallmarkGeneSets = split(gene_sets$gene_symbol, gene_sets$gs_name)
-df = ora(timeDEgenes, HallmarkGeneSets, rownames(se))
-head(df)
-```
-
-``` output
-                                                 gene_set hits n_genes
-HALLMARK_ADIPOGENESIS               HALLMARK_ADIPOGENESIS    9    1134
-HALLMARK_ALLOGRAFT_REJECTION HALLMARK_ALLOGRAFT_REJECTION   23    1134
-HALLMARK_ANDROGEN_RESPONSE     HALLMARK_ANDROGEN_RESPONSE    6    1134
-HALLMARK_ANGIOGENESIS               HALLMARK_ANGIOGENESIS    4    1134
-HALLMARK_APICAL_JUNCTION         HALLMARK_APICAL_JUNCTION   14    1134
-HALLMARK_APICAL_SURFACE           HALLMARK_APICAL_SURFACE    3    1134
-                             gene_set_size n_total     p_value    p_adjust
-HALLMARK_ADIPOGENESIS                  185   21198 0.662392856 0.871569547
-HALLMARK_ALLOGRAFT_REJECTION           191   21198 0.000234807 0.002935087
-HALLMARK_ANDROGEN_RESPONSE             107   21198 0.512665196 0.753919406
-HALLMARK_ANGIOGENESIS                   36   21198 0.124351058 0.260206520
-HALLMARK_APICAL_JUNCTION               186   21198 0.124899130 0.260206520
-HALLMARK_APICAL_SURFACE                 41   21198 0.376915129 0.588929889
-```
-
-::::::::::::::::::::::::::::::::::::::::::::::::::
-
-
-### Choose a proper universe
-
-Finally, it is time to talk about the "universe" of ORA analysis which is
-normally ignored in many analyses. In current tools, there are mainly
-following different universe settings:
-
-1. Using all genes in the genome, this also includes non-protein coding genes.
-   For human, the size of universe is 60k ~ 70k.
-2. Using all protein-coding genes. For human, the size of universe is ~ 20k.
-3. In the era of microarray, total genes that are measured on the chip is
-   taken as the universe. For RNASeq, since reads are aligned to all genes, we
-   can set a cutoff and only use those "expressed" genes as the universe.
-4. Using all genes in a gene sets collection. Then the size of the universe
-   depends on the size of the gene sets collection. For example GO gene sets
-   collection is much larger than the KEGG pathway gene sets collection.
-
-
-If the universe is set, DE genes as well as genes in the gene sets are first
-intersected to the universe. However, in general the universe affects three
-values of $n_{22}$, $n_{02}$ and $n_{20}$ more, which correspond to the non-DE
-genes or non-gene-set genes.
-
-<center>
-|            | In the gene set | Not in the gene set | Total
-| ---------- | --------------- | --------------------| -------
-|  **DE**    |     $n_{11}$    |    $n_{12}$         | $n_{1+}$
-| **Not DE** |     $n_{21}$    |    $\color{red}{n_{22}}$         | $\color{red}{n_{2+}}$
-| **Total**  |     $n_{+1}$    |    $\color{red}{n_{+2}}$         | $\color{red}{n}$
-</center>
-
-
-In the contingency table, we are testing the dependency of whether genes being
-DE and whether genes being in the gene set. In the model, each gene has a
-definite attribute of being either DE or non-DE and each gene has a second
-definite attribute of either belonging to the gene set or not. If a larger
-universe is used, such as total genes where there are genes not measured nor
-will never annotated to gene sets (let's call them _non-informative genes_,
-e.g. non-protein coding genes or not-expressed genes), all the
-non-informative genes are implicitly assigned with an attribute of being
-non-DE or not in the gene set. This implicit assignment is not proper because
-these genes provide no information and they should not be included in the
-analysis. Adding them to the analysis increases $n_{22}$, $n_{02}$ or
-$n_{20}$, makes the observation $n_{11}$ getting further away from the null
-distribution, eventually generates a smaller _p_-value. For the similar
-reason, small universes tend to generate large _p_-values.
-
-
-In `enrichGO()`/`enrichKEGG()`/`enricher()`, universe genes can be set via the
-`universe` argument. By default the universe is the total genes in the gene
-sets collection. When a self-defined universe is provided, this might be
-different from what you may think, the universe is [_the intersection of
-user-provided universe and total genes in the gene set
-collection_](https://github.com/YuLab-SMU/DOSE/blob/93a4b981c0251e5c6eb1f2413f4a02b8e6d06ff5/R/enricher_internal.R#L65C43-L65C51).
-Thus the universe setting in **clusterProfiler** is very conservative.
-
-Check the more discusstions at https://twitter.com/mdziemann/status/1626407797939384320.
-
-
-We can do a simple experiment on the small MSigDB hallmark gene sets. We use
-the `ora()` function which we have implemented in previous "Further reading"
-section and we compare three different universe settings.
-
-
-``` r
-# all genes in the gene sets collection ~ 4k genes
-df1 = ora(timeDEgenes, HallmarkGeneSets)
-# all protein-coding genes, ~ 20k genes
-df2 = ora(timeDEgenes, HallmarkGeneSets, rownames(se))
-# all genes in org.Mm.eg.db ~ 70k genes
-df3 = ora(timeDEgenes, HallmarkGeneSets, 
-    keys(org.Mm.eg.db, keytype = "SYMBOL"))
-
-# df1, df2, and df3 are in the same row order, 
-# so we can directly compare them
-plot(df1$p_value, df2$p_value, col = 2, pch = 16, 
-    xlim = c(0, 1), ylim = c(0, 1), 
-    xlab = "all hallmark genes as universe (p-values)", ylab = "p-values",
-    main = "compare universes")
-points(df1$p_value, df3$p_value, col = 4, pch = 16)
-abline(a = 0, b = 1, lty = 2)
-legend("topleft", legend = c("all protein-coding genes as universe", "all genes as universe"), 
-    pch = 16, col = c(2, 4))
-```
-
-<img src="fig/07-gene-set-analysis-rendered-compare-universe-1.png" style="display: block; margin: auto;" />
-
-It is very straightforward to see, with a larger universe, there are more
-significant gene sets, which may produce potentially more false positives.
-This is definitely worse when using all genes in the genome as universe.
-
-Based on the discussion in this section, the recommendation of using universe is:
-
-1. using protein-coding genes,
-2. using measured genes,
-3. or using a conservative way with **clusterProfiler**.
 
 ## Visualization
 
@@ -1788,51 +1184,6 @@ first load the **enrichplot** package. The full sets of visualizations that
 **enrichplot** supports can be found from
 https://yulab-smu.top/biomedical-knowledge-mining-book/enrichplot.html.
 
-We first re-generate the enrichment table.
-
-
-``` r
-library(enrichplot)
-resTimeGO = enrichGO(gene = timeDEgenes, 
-                     keyType = "SYMBOL",
-                     ont = "BP", 
-                     OrgDb = org.Mm.eg.db,
-                     pvalueCutoff = 1,
-                     qvalueCutoff = 1)
-resTimeGOTable = as.data.frame(resTimeGO)
-head(resTimeGOTable)
-```
-
-``` output
-                   ID                Description GeneRatio   BgRatio RichFactor
-GO:0050900 GO:0050900        leukocyte migration    51/968 402/28905  0.1268657
-GO:0006935 GO:0006935                 chemotaxis    52/968 465/28905  0.1118280
-GO:0042330 GO:0042330                      taxis    52/968 467/28905  0.1113490
-GO:0030595 GO:0030595       leukocyte chemotaxis    36/968 242/28905  0.1487603
-GO:0071674 GO:0071674 mononuclear cell migration    32/968 203/28905  0.1576355
-GO:0060326 GO:0060326            cell chemotaxis    41/968 334/28905  0.1227545
-           FoldEnrichment    zScore       pvalue     p.adjust       qvalue
-GO:0050900       3.788277 10.479256 3.536123e-16 1.795643e-12 1.304643e-12
-GO:0006935       3.339243  9.465940 3.336947e-14 6.712316e-11 4.876903e-11
-GO:0042330       3.324942  9.428613 3.965528e-14 6.712316e-11 4.876903e-11
-GO:0030595       4.442063 10.009042 6.591196e-14 8.367524e-11 6.079511e-11
-GO:0071674       4.707080  9.866216 3.208410e-13 3.258461e-10 2.367469e-10
-GO:0060326       3.665515  9.120495 8.641191e-13 7.313328e-10 5.313575e-10
-                                                                                                                                                                                                                                                                                                               geneID
-GO:0050900              Tnfsf18/Sell/Slamf9/Fut7/Itga4/Mdk/Grem1/Ada/Prex1/Edn3/P2ry12/Il12a/S100a8/S100a9/Nbl1/Padi2/Bst1/Cxcl5/Ppbp/Pf4/Cxcl1/Ptn/Alox5/Trpm4/Hsd3b7/Itgam/Adam8/Ascl2/Calr/Ccl17/Enpp1/Aire/Ccl2/Ccl7/Ccl5/Ccl6/Ccr7/Aoc3/Itgb3/Ccl28/Lgals3/Ptk2b/Emp2/Apod/Retnlg/Plg/Fpr2/Dusp1/Ager/Il33/Ch25h
-GO:0006935 Tnfsf18/Sell/Slamf9/Mdk/Grem1/Prex1/Edn3/P2ry12/Il12a/S100a8/S100a9/Lpar1/Nbl1/Padi2/Bst1/Cxcl5/Ppbp/Pf4/Cxcl1/Ptn/Alox5/Ntf3/Trpm4/Hsd3b7/Itgam/Adam8/Lsp1/Calr/Ccl17/Robo3/Cmtm7/Ccl2/Ccl7/Ccl5/Ccl6/Ccr7/Itgb3/Tubb2b/Ccl28/Lgals3/Cmtm5/Ptk2b/Nr4a1/Casr/Retnlg/Fpr2/Dusp1/Ager/Stx3/Ch25h/Plxnb3/Nox1
-GO:0042330 Tnfsf18/Sell/Slamf9/Mdk/Grem1/Prex1/Edn3/P2ry12/Il12a/S100a8/S100a9/Lpar1/Nbl1/Padi2/Bst1/Cxcl5/Ppbp/Pf4/Cxcl1/Ptn/Alox5/Ntf3/Trpm4/Hsd3b7/Itgam/Adam8/Lsp1/Calr/Ccl17/Robo3/Cmtm7/Ccl2/Ccl7/Ccl5/Ccl6/Ccr7/Itgb3/Tubb2b/Ccl28/Lgals3/Cmtm5/Ptk2b/Nr4a1/Casr/Retnlg/Fpr2/Dusp1/Ager/Stx3/Ch25h/Plxnb3/Nox1
-GO:0030595                                                                                              Tnfsf18/Sell/Slamf9/Mdk/Grem1/Prex1/Edn3/Il12a/S100a8/S100a9/Nbl1/Padi2/Bst1/Cxcl5/Ppbp/Pf4/Cxcl1/Ptn/Alox5/Trpm4/Hsd3b7/Itgam/Adam8/Calr/Ccl17/Ccl2/Ccl7/Ccl5/Ccl6/Ccr7/Lgals3/Ptk2b/Retnlg/Fpr2/Dusp1/Ch25h
-GO:0071674                                                                                                                      Tnfsf18/Slamf9/Fut7/Itga4/Mdk/Grem1/Il12a/Nbl1/Padi2/Alox5/Trpm4/Hsd3b7/Adam8/Ascl2/Calr/Ccl17/Aire/Ccl2/Ccl7/Ccl5/Ccl6/Ccr7/Itgb3/Lgals3/Ptk2b/Apod/Retnlg/Plg/Fpr2/Dusp1/Ager/Ch25h
-GO:0060326                                                                Tnfsf18/Sell/Slamf9/Mdk/Grem1/Prex1/Edn3/Il12a/S100a8/S100a9/Lpar1/Nbl1/Padi2/Bst1/Cxcl5/Ppbp/Pf4/Cxcl1/Ptn/Alox5/Trpm4/Hsd3b7/Itgam/Adam8/Calr/Ccl17/Ccl2/Ccl7/Ccl5/Ccl6/Ccr7/Ccl28/Lgals3/Ptk2b/Nr4a1/Retnlg/Fpr2/Dusp1/Ch25h/Plxnb3/Nox1
-           Count
-GO:0050900    51
-GO:0006935    52
-GO:0042330    52
-GO:0030595    36
-GO:0071674    32
-GO:0060326    41
-```
 
 `barplot()` and `dotplot()` generate plots for a small number of significant gene sets.
 Note the two functions are directly applied on `resTimeGO` returned by `enrichGO()`.
@@ -1869,12 +1220,12 @@ it has a positive relation to the size of gene sets. A high value of `"Count"`
 does not mean the gene set is more enriched.
 
 It is the same reason for dotplot where `"GeneRatio"` is used as values on
-x-axis. Gene ratio is calculated as the fraction of DE genes from a certain
-gene set (GeneRatio = Count/Total_DE_Genes). The dotplot puts multiple gene
+x-axis. **Gene ratio** is calculated as *the fraction of DE genes from a certain
+gene set* (GeneRatio = Count/Total_DE_Genes). The dotplot puts multiple gene
 sets in the same plot and the aim is to compare between gene sets, thus gene
 sets should be "scaled" to make them comparable. `"GeneRatio"` is not scaled
-for different gene sets and it still has a positive relation to the gene set
-size, which can be observed in the dotplot where higher the gene ratio, larger
+for different gene sets and it still has **a positive relation to the gene set
+size**, which can be observed in the dotplot where higher the gene ratio, larger
 the dot size. Actually "GeneRatio" has the same effect as "Count" (GeneRatio =
 Count/Total_DE_Genes), so as has been explained in the previous paragraph,
 `"GeneRatio"` is not a good measure for enrichment either.
@@ -1894,9 +1245,9 @@ n_01 = as.numeric(gsub("/.*$", "", resTimeGOTable$BgRatio))
 n = 28943  # length(resTimeGO@universe)
 ```
 
-Instead of using `GeneRatio`, we use the fraction of DE genes in the gene sets
+Instead of using GeneRatio, we use the fraction of DE genes in the gene sets
 which are kind of like a "scaled" value for all gene sets. Let's calculate it:
-
+ 
 
 ``` r
 resTimeGOTable$DE_Ratio = n_11/n_01
@@ -1907,8 +1258,8 @@ Then intuitively, if a gene set has a higher `DE_Ratio` value, we could say DE
 genes have a higher enrichment^[If here the term "enrichment" does mean
 statistically.] in it.
 
-We can measure the enrichment in two other ways. First, the log2 fold
-enrichment, defined as:
+We can measure the enrichment in two other ways. First, z-score, which we won't look at here. 
+Second, the log2 fold enrichment, defined as:
 
 $$ \log_2(\mathrm{Fold\_enrichment}) = \frac{n_{11}/n_{10}}{n_{01}/n} = \frac{n_{11}/n_{01}}{n_{10}/n} = \frac{n_{11}n}{n_{10}n_{01}} $$
 
@@ -1921,24 +1272,6 @@ _gene\_set% in the universe_. The two are identical.
 resTimeGOTable$log2_Enrichment = log( (n_11/n_10)/(n_01/n) )
 ```
 
-Second, it is also common to use _z_-score which is
-
-$$ z = \frac{n_{11} - \mu}{\sigma} $$
-
-where $\mu$ and $\sigma$ are [the mean and standard deviation of the
-hypergeometric
-distribution](https://en.wikipedia.org/wiki/Hypergeometric_distribution). They
-can be calculated as:
-
-
-``` r
-hyper_mean = n_01*n_10/n
-
-n_02 = n - n_01
-n_20 = n - n_10
-hyper_var = n_01*n_10/n * n_20*n_02/n/(n-1)
-resTimeGOTable$zScore = (n_11 - hyper_mean)/sqrt(hyper_var)
-```
 
 
 We will use log2 fold change as the primary variable to map to bar heights and

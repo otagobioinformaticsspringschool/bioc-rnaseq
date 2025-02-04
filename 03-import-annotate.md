@@ -596,7 +596,7 @@ other attached packages:
 loaded via a namespace (and not attached):
  [1] Matrix_1.7-1            bit_4.5.0               jsonlite_1.8.9         
  [4] highr_0.11              compiler_4.4.2          BiocManager_1.30.25    
- [7] renv_1.0.11             crayon_1.5.3            blob_1.2.4             
+ [7] renv_1.1.0              crayon_1.5.3            blob_1.2.4             
 [10] Biostrings_2.72.1       png_0.1-8               fastmap_1.2.0          
 [13] yaml_2.3.10             lattice_0.22-6          R6_2.5.1               
 [16] XVector_0.44.0          S4Arrays_1.4.1          DelayedArray_0.30.1    

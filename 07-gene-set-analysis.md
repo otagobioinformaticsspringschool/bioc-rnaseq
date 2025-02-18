@@ -1014,7 +1014,7 @@ resTimeGO = enrichGO(gene = timeDEgenes,
 ```
 
 ``` output
---> Expected input gene ID: 20724,15395,12628,16578,22384,12316
+--> Expected input gene ID: 16869,66826,74052,19110,20926,12704
 ```
 
 ``` output
